@@ -7,7 +7,7 @@ using System.Runtime.CompilerServices;
 
 namespace VolleyballStats
 {
-    public abstract class ObservableObject : INotifyPropertyChanged
+    public abstract class ObservableObjectOld : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
 

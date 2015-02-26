@@ -21,7 +21,7 @@ namespace VolleyballStats
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class MainPage : Page
+    public sealed partial class Game : Page
     {
         //public class VolleyBallGame
         //{
@@ -44,10 +44,14 @@ namespace VolleyballStats
 
         public VolleyballGame ViewModel {get; set;}
 
-        public MainPage()
+        public Game()
         {
             this.InitializeComponent();
-            ViewModel = new VolleyballGame();
+            if (this.DataContext != null)
+            {
+            this.ViewModel = (VolleyballGame)this.DataContext;
+
+            //ViewModel = new VolleyballGame();
             ViewModel.Players.Add(new Player(){Number=2, Name="Elena"});
             ViewModel.Players.Add(new Player(){Number=13, Name="Sydney"});
             ViewModel.Players.Add(new Player(){Number=18, Name="Hailey"});
@@ -104,8 +108,9 @@ namespace VolleyballStats
             //ViewModel.Sets.Add(new Set() { Number= ViewModel.Sets.Count + 1 });
 
             ViewModel.InitGame();
+            }
 
-            this.DataContext = ViewModel;
+            //this.DataContext = ViewModel;
         }
 
 
@@ -211,40 +216,40 @@ namespace VolleyballStats
             }
         }
 
-        private void server_Checked(object sender, RoutedEventArgs e)
-        {
-            //int childAmount = VisualTreeHelper.GetChildrenCount((sender as ToggleButton).Parent);
-            //ToggleButton tb;
-            //for (int i = 0; i < childAmount; i++)
-            //{
-            //    tb = null;
-            //    tb = VisualTreeHelper.GetChild((sender as ToggleButton).Parent, i) as ToggleButton;
+        //private void server_Checked(object sender, RoutedEventArgs e)
+        //{
+        //    //int childAmount = VisualTreeHelper.GetChildrenCount((sender as ToggleButton).Parent);
+        //    //ToggleButton tb;
+        //    //for (int i = 0; i < childAmount; i++)
+        //    //{
+        //    //    tb = null;
+        //    //    tb = VisualTreeHelper.GetChild((sender as ToggleButton).Parent, i) as ToggleButton;
 
-            //    if (tb != null)
-            //        tb.IsChecked = false;
-            //}
+        //    //    if (tb != null)
+        //    //        tb.IsChecked = false;
+        //    //}
 
-            //(sender as ToggleButton).IsChecked = true;
+        //    //(sender as ToggleButton).IsChecked = true;
 
-            var button = (ToggleButton)sender;
-            if (button.IsChecked != null)
-            { // Not sure why checked can be null but that's fine, ignore it
-                bool notChecked = (!(bool)button.IsChecked);
-                if (notChecked)
-                { // I guess this means the click would uncheck it
-                    button.IsChecked = true;
-                }
-            }
+        //    var button = (ToggleButton)sender;
+        //    if (button.IsChecked != null)
+        //    { // Not sure why checked can be null but that's fine, ignore it
+        //        bool notChecked = (!(bool)button.IsChecked);
+        //        if (notChecked)
+        //        { // I guess this means the click would uncheck it
+        //            button.IsChecked = true;
+        //        }
+        //    }
 
 
-            //foreach (ListViewItem server in this.serverList.Items)
-            //{
-            //    if (server == e.OriginalSource)
-            //    {
-            //        return ;
-            //    }
-            //}
-        }
+        //    //foreach (ListViewItem server in this.serverList.Items)
+        //    //{
+        //    //    if (server == e.OriginalSource)
+        //    //    {
+        //    //        return ;
+        //    //    }
+        //    //}
+        //}
 
         private void next_Click(object sender, RoutedEventArgs e)
         {

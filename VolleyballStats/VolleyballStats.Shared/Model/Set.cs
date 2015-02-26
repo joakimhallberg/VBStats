@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Collections;
 using System.ComponentModel;
 using System.Text;
+using GalaSoft.MvvmLight;
 
 namespace VolleyballStats
 {
@@ -81,18 +82,18 @@ namespace VolleyballStats
         public int Number
         {
             get { return _number; }
-            set { SetProperty(ref _number, value); }
+            set { Set(ref _number, value); }
         }
 
         public int PointsWon
         {
             get { return _won; }
-            set { SetProperty(ref _won, value); }
+            set { Set(ref _won, value); }
         }
         public int PointsLost
         {
             get { return _lost; }
-            set { SetProperty(ref _lost, value); }
+            set { Set(ref _lost, value); }
         }
 
         public void CalcScore()
@@ -115,7 +116,7 @@ namespace VolleyballStats
         public string Score
         {
             get { return PointsWon + " - " + PointsLost;}
-            set { SetProperty(ref _temp, Score);}
+            set { Set(ref _temp, Score); }
         }
 
         public string Export(int set)
@@ -125,6 +126,7 @@ namespace VolleyballStats
             {
                 csv += point.ExportCSV(set) + Environment.NewLine;
             }
+            csv += "" + Environment.NewLine;
             return csv;
         }
 

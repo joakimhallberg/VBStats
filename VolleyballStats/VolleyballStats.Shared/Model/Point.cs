@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using GalaSoft.MvvmLight;
 
 namespace VolleyballStats
 {
@@ -20,7 +21,7 @@ namespace VolleyballStats
         public bool? Serving
         {
             get { return this._serving; }
-            set { SetProperty(ref _serving, value); }
+            set { Set(ref _serving, value); }
         }
 
         public Player Server
@@ -31,7 +32,7 @@ namespace VolleyballStats
                 {
                     this.Serving = (value.Number > -1);
                 }
-                SetProperty(ref _server, value); 
+                Set(ref _server, value); 
             }
         }
 
@@ -44,7 +45,7 @@ namespace VolleyballStats
         public ServeGrade ServeGrade
         {
             get { return this._grade; }
-            set { SetProperty(ref _grade, value); }
+            set { Set(ref _grade, value); }
         }
 
         public int? Grade
@@ -61,13 +62,13 @@ namespace VolleyballStats
         public bool Returned
         {
             get { return this._returned; }
-            set { SetProperty(ref _returned, value); }
+            set { Set(ref _returned, value); }
         }
 
         public bool Won
         {
             get { return this._won; }
-            set { SetProperty(ref _won, value); }
+            set { Set(ref _won, value); }
         }
 
         public Reason Reason
@@ -75,7 +76,7 @@ namespace VolleyballStats
             get { return this._reason; }
             set 
             {
-                SetProperty(ref _reason, value);
+                Set(ref _reason, value);
                 if (value != null)
                 {
                     if (value.ServeReturned.HasValue && !value.ServeReturned.Value && value.Win.HasValue && Serving.HasValue)
@@ -109,13 +110,13 @@ namespace VolleyballStats
         public PlayerFault Fault
         {
             get { return this._fault; }
-            set { SetProperty(ref _fault, value); }
+            set { Set(ref _fault, value); }
         }
 
         public Player Credit
         {
             get { return this._credit; }
-            set { SetProperty(ref _credit, value); }
+            set { Set(ref _credit, value); }
         }
 
         public string ExportCSV(int set)

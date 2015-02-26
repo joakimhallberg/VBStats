@@ -1,5 +1,5 @@
 ﻿<Page
-    x:Class="VolleyballStats.MainPage"
+    x:Class="VolleyballStats.Game"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:VolleyballStats"
@@ -18,6 +18,9 @@
         <local:BooleanServerConverter x:Key="serverConverter" CurrentViewModel="{Binding DataContext}" />
         <local:BooleanIntServerConverter x:Key="serverIntConverter" />
     </Page.Resources>
+	<Page.DataContext>
+		<Binding Mode="OneWay" Path="VolleyballGame" Source="{StaticResource Locator}"/>
+	</Page.DataContext>
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>

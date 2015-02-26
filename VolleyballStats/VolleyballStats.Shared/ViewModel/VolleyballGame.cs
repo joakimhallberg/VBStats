@@ -5,10 +5,11 @@ using System.Collections.Specialized;
 using System.Text;
 using System.Windows.Input;
 using Windows.ApplicationModel.DataTransfer;
+using GalaSoft.MvvmLight;
 
 namespace VolleyballStats
 {
-    public class VolleyballGame : ObservableObject
+    public class VolleyballGame : ViewModelBase //ObservableObject
     {
         public VolleyballGame()
         {
@@ -39,13 +40,14 @@ namespace VolleyballStats
         private Set _currentSet;
         private Point _currentPoint;
         private Player _opponent;
+        //private string 
 
         private ItemObservableCollection<Set> _sets;
 
         public ItemObservableCollection<Set> Sets
         {
             get { return _sets;}
-            set { this.SetProperty(ref _sets, value, "Sets");}
+            set { this.Set(ref _sets, value, "Sets"); }
         }
 
         public ICommand NextPoint { get; set; }
@@ -61,6 +63,7 @@ namespace VolleyballStats
             {
                 csv += this.Sets[i].Export(i+1);
             }
+            csv += "" + Environment.NewLine;
             CopyTextToClipboard(csv);
         }
 
@@ -100,7 +103,7 @@ namespace VolleyballStats
         
         private void OnSetsChanged(object sender, ItemPropertyChangedEventArgs<Set> e)
         {
-            this.SetProperty(ref _sets, Sets, "Sets");
+            this.Set(ref _sets, Sets, "Sets");
         }
 
         private void OnSetsChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -160,27 +163,27 @@ namespace VolleyballStats
         public Player Opponent 
         {
             get { return _opponent; }
-            set { SetProperty(ref _opponent, value); } 
+            set { Set(ref _opponent, value); } 
         }
 
         public Point CurrentPoint 
         {
             get { return _currentPoint; }
-            set { 
-                SetProperty(ref _currentPoint, value);
+            set {
+                Set(ref _currentPoint, value);
                 _currentPoint.PropertyChanged += _currentPoint_PropertyChanged;
             } 
         }
 
         private void _currentPoint_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            SetProperty(ref _currentPoint, _currentPoint);
+            Set(ref _currentPoint, _currentPoint);
         }
 
         public Set CurrentSet
         {
             get { return _currentSet; }
-            set { SetProperty(ref _currentSet, value); }
+            set { Set(ref _currentSet, value); }
         }
     }
         public class Player
