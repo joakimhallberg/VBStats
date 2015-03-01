@@ -1,5 +1,5 @@
 ﻿<Page
-    x:Class="VolleyballStats.Game"
+    x:Class="VolleyballStats.GameView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:VolleyballStats"
@@ -24,11 +24,14 @@
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
-            <RowDefinition Height="60"/>
-            <RowDefinition Height="40"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="Auto"/>
@@ -40,10 +43,10 @@
         <TextBlock Text="The Maxx Volleyball stats - 13 Red"  FontSize="25" FontWeight="Bold" Foreground="Red" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2"/>
         <StackPanel Orientation="Horizontal" Grid.Column="2" Grid.Row="0" Grid.ColumnSpan="3">
             <TextBlock Text="Opponent" FontSize="20" />
-            <StackPanel Orientation="Horizontal"  >
-                <ListView ItemsSource="{Binding Sets}" VerticalAlignment="Center" ScrollViewer.HorizontalScrollBarVisibility="Auto"
+            <StackPanel Orientation="Horizontal" Margin="10,0,10,0" >
+                <ListView ItemsSource="{Binding Game.Sets, Mode=TwoWay}" VerticalAlignment="Center" ScrollViewer.HorizontalScrollBarVisibility="Auto"
     ScrollViewer.VerticalScrollBarVisibility="Disabled" ScrollViewer.HorizontalScrollMode="Enabled"
-    ScrollViewer.VerticalScrollMode="Disabled" ScrollViewer.ZoomMode="Disabled" SelectionMode="None">
+    ScrollViewer.VerticalScrollMode="Disabled" ScrollViewer.ZoomMode="Disabled" SelectionMode="None" FontSize="20">
                     <ListView.ItemsPanel>
                         <ItemsPanelTemplate>
                             <StackPanel Orientation="Horizontal"/>
@@ -51,8 +54,12 @@
                     </ListView.ItemsPanel>
                     <ListView.ItemTemplate>
                         <DataTemplate>
-                            <TextBlock Text="{Binding Path=Score}" />                            
-                        </DataTemplate>                        
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding Path=Us.Won, Mode=TwoWay}" />
+                                <TextBlock Text=" - " />
+                                <TextBlock Text="{Binding Path=Them.Won, Mode=TwoWay}" />
+                            </StackPanel>
+                        </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
                 
@@ -61,12 +68,13 @@
         <TextBlock Text="Server" Grid.Row="1" Grid.Column="0" FontSize="20" TextAlignment="Center"/>
         <StackPanel Grid.Column="0" Grid.Row="2"  HorizontalAlignment="Center" >
             <!--<TextBox Text="{Binding  CurrentPoint.Server, Mode=TwoWay}" />-->
-            <ListView ItemsSource="{Binding Servers}" Name="serverList" SelectedItem="{Binding Path=CurrentPoint.Server, Mode=TwoWay}"  >
+            <ListView ItemsSource="{Binding Game.Config.Servers}" Name="serverList" SelectedItem="{Binding Path=CurrentPoint.Server, Mode=TwoWay}"  >
                 <ListView.ItemTemplate >
                     <DataTemplate  >
                         <Border BorderBrush="Red" BorderThickness="1">
-                        <StackPanel Orientation="Vertical" >
+                            <StackPanel Orientation="Vertical" >                            
                                 <TextBlock Text="{Binding DisplayName}" Width="150"  TextAlignment="Center" />
+                                <TextBlock Text="{Binding Path=Stats.ServePercemt}" />
                             </StackPanel>
                         </Border>                      
                     </DataTemplate>
@@ -96,7 +104,7 @@
             </StackPanel>
             <TextBlock Text="Grade:"/>
             <StackPanel Orientation="Horizontal">
-                <ListView ItemsSource="{Binding ServeGrades}" SelectedItem="{Binding CurrentPoint.ServeGrade, Mode=TwoWay}">
+                <ListView ItemsSource="{Binding Game.Config.ServeGrades}" SelectedItem="{Binding CurrentPoint.ServeGrade, Mode=TwoWay}">
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding DisplayName}" Width="70"  TextAlignment="Center" />
@@ -107,15 +115,7 @@
         </StackPanel>
         <TextBlock Text="Win" Grid.Row="1" Grid.Column="2" FontSize="20"  TextAlignment="Center"/>
         <StackPanel Grid.Column="2" Grid.Row="2"  >
-            <RadioButton Content="Yes"  GroupName="pointWon" IsChecked="{Binding Path=CurrentPoint.Won, Mode=TwoWay}" >
-                <RadioButton.Template>
-                    <ControlTemplate>
-                        <ToggleButton IsThreeState="False" IsChecked="{Binding IsChecked, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
-                          Content="{Binding Content, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}" Width="80"/>
-                    </ControlTemplate>
-                </RadioButton.Template>
-            </RadioButton>
-            <ListView Name="win" ItemsSource="{Binding WinReasons}" SelectedItem="{Binding CurrentPoint.Reason, Mode=TwoWay}" SelectionChanged="win_SelectionChanged" >
+            <ListView Name="win" ItemsSource="{Binding Game.Config.WinReasons}" SelectedItem="{Binding CurrentPoint.Reason, Mode=TwoWay}" SelectionChanged="win_SelectionChanged" >
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding DisplayName}" Width="100"  TextAlignment="Center" />
@@ -125,15 +125,7 @@
         </StackPanel>
         <TextBlock Text="Loose" Grid.Row="1" Grid.Column="3" FontSize="20"  TextAlignment="Center"/>
         <StackPanel Grid.Column="3" Grid.Row="2"  >
-            <RadioButton Content="No"  GroupName="pointWon" IsChecked="{Binding Path=CurrentPoint.Won, Mode=TwoWay, Converter={StaticResource oppositeConverter}}" >
-                <RadioButton.Template>
-                    <ControlTemplate>
-                        <ToggleButton IsThreeState="False" IsChecked="{Binding IsChecked, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
-                          Content="{Binding Content, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}" Width="80"/>
-                    </ControlTemplate>
-                </RadioButton.Template>
-            </RadioButton>
-            <ListView Name="loose" ItemsSource="{Binding LooseReasons}" SelectedItem="{Binding CurrentPoint.Reason, Mode=TwoWay}" SelectionChanged="loose_SelectionChanged" >
+            <ListView Name="loose" ItemsSource="{Binding Game.Config.LooseReasons}" SelectedItem="{Binding CurrentPoint.Reason, Mode=TwoWay}" SelectionChanged="loose_SelectionChanged" >
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding DisplayName}" Width="100"  TextAlignment="Center" />
@@ -151,7 +143,7 @@
         </StackPanel>
         <TextBlock Text="Fault" Grid.Row="1" Grid.Column="4" FontSize="20"  TextAlignment="Center"/>
         <StackPanel Grid.Column="4" Grid.Row="2"  >
-            <ListView ItemsSource="{Binding PlayerFaults}" SelectedItem="{Binding Path=CurrentPoint.Fault, Mode=TwoWay}">
+            <ListView ItemsSource="{Binding Game.Config.PlayerFaults}" SelectedItem="{Binding Path=CurrentPoint.Fault, Mode=TwoWay}">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding DisplayName}" Width="100"  TextAlignment="Center" />
@@ -169,7 +161,7 @@
         </StackPanel>
         <TextBlock Text="Credit" Grid.Row="1" Grid.Column="5" FontSize="20" TextAlignment="Center"/>
         <StackPanel Grid.Column="5" Grid.Row="2"  >
-            <ListView ItemsSource="{Binding Players}"  SelectedItem="{Binding Path=CurrentPoint.Credit, Mode=TwoWay}" >
+            <ListView ItemsSource="{Binding Game.Config.Players}"  SelectedItem="{Binding Path=CurrentPoint.Credit, Mode=TwoWay}" >
                 <ListView.ItemTemplate >
                     <DataTemplate  >
                         <Border BorderBrush="Red" BorderThickness="1">
@@ -192,8 +184,28 @@
                 </ListView.ItemTemplate>
             </ListView>
         </StackPanel>
-        <TextBlock Text="Navigation" Grid.Row="1" Grid.Column="6" FontSize="20"/>
-        <StackPanel Grid.Column="6" Grid.Row="2" HorizontalAlignment="Center"  >
+        <TextBlock Text="Result" Grid.Row="1" Grid.Column="6" FontSize="20"/>
+        <StackPanel Grid.Column="6" Grid.Row="2" HorizontalAlignment="Center">
+            <RadioButton Content="Won"  GroupName="pointWon" IsChecked="{Binding Path=CurrentPoint.Won, Mode=TwoWay}" >
+                <RadioButton.Template>
+                    <ControlTemplate>
+                        <ToggleButton IsThreeState="False" IsChecked="{Binding IsChecked, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                          Content="{Binding Content, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}" Width="80"/>
+                    </ControlTemplate>
+                </RadioButton.Template>
+            </RadioButton>
+            <RadioButton Content="Lost"  GroupName="pointWon" IsChecked="{Binding Path=CurrentPoint.Won, Mode=TwoWay, Converter={StaticResource oppositeConverter}}" >
+                <RadioButton.Template>
+                    <ControlTemplate>
+                        <ToggleButton IsThreeState="False" IsChecked="{Binding IsChecked, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                          Content="{Binding Content, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}" Width="80"/>
+                    </ControlTemplate>
+                </RadioButton.Template>
+            </RadioButton>
+
+        </StackPanel>
+        <TextBlock Text="Navigation" Grid.Row="1" Grid.Column="7" FontSize="20"/>
+        <StackPanel Grid.Column="7" Grid.Row="2" HorizontalAlignment="Center"  >
             <Button Content="Next" Command="{Binding NextPoint}" Margin="0,20, 0,20" ></Button>
             <Button Content="Prev" Command="{Binding PrevPoint}" Margin="0,20, 0,20" ></Button>
 
@@ -204,6 +216,44 @@
             
             <Button Content="Export" Command="{Binding ExportGame}"  Margin="0,20, 0,20"></Button>
 
+        </StackPanel>
+        <StackPanel Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="6">
+            <ListView ItemsSource="{Binding Path=CurrentSet.Us.Reasons, Mode=TwoWay}" VerticalAlignment="Center" ScrollViewer.HorizontalScrollBarVisibility="Auto"
+    ScrollViewer.VerticalScrollBarVisibility="Disabled" ScrollViewer.HorizontalScrollMode="Enabled"
+    ScrollViewer.VerticalScrollMode="Disabled" ScrollViewer.ZoomMode="Disabled" SelectionMode="None">
+                <ListView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal"/>
+                    </ItemsPanelTemplate>
+                </ListView.ItemsPanel>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock Text="{Binding Path=Name, Mode=TwoWay}" />
+                            <TextBlock Text="{Binding Path=Count, Mode=TwoWay}" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </StackPanel>
+        <StackPanel Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="6">
+            <ListView ItemsSource="{Binding Path=CurrentSet.Them.Reasons, Mode=TwoWay}" VerticalAlignment="Center" ScrollViewer.HorizontalScrollBarVisibility="Auto"
+    ScrollViewer.VerticalScrollBarVisibility="Disabled" ScrollViewer.HorizontalScrollMode="Enabled"
+    ScrollViewer.VerticalScrollMode="Disabled" ScrollViewer.ZoomMode="Disabled" SelectionMode="None">
+                <ListView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal"/>
+                    </ItemsPanelTemplate>
+                </ListView.ItemsPanel>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock Text="{Binding Path=Name, Mode=TwoWay}" />
+                            <TextBlock Text="{Binding Path=Count, Mode=TwoWay}" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
         </StackPanel>
 
     </Grid>

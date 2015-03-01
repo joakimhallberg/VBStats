@@ -6,6 +6,9 @@ using System.Text;
 using System.Windows.Input;
 using Windows.ApplicationModel.DataTransfer;
 using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Command;
+
+using VolleyballStats.Model;
 
 namespace VolleyballStats
 {
@@ -13,55 +16,61 @@ namespace VolleyballStats
     {
         public VolleyballGame()
         {
-            this.Players = new List<Player>();
-            this.Servers = new List<Player>();
-            this.Opponent = new Player() { Name = "Them", Number=-1 };
-            this.Servers.Add(this.Opponent);
-            this.ServeGrades = new List<ServeGrade>();
-            this.PlayerFaults = new List<PlayerFault>();
-            this.WinReasons = new List<Reason>();
-            this.LooseReasons = new List<Reason>();
+            this.Config = new GameConfiguration();
+            this.NextPoint = new RelayCommand(NextPointChangeEvent, CanMoveNextPoint);
 
-            this.Sets = new ItemObservableCollection<Set>();
-            this.NextPoint = new DelegateCommand(NextPointChangeEvent);
-            this.PrevPoint = new DelegateCommand(PrevPointChangeEvent);
-            this.NewSet = new DelegateCommand(NewSetEvent);
-            this.NewGame = new DelegateCommand(NewGameEvent);
-            this.ExportGame = new DelegateCommand(ExportGameEvent);
+            this.PrevPoint = new RelayCommand(PrevPointChangeEvent, CanMovePrevPoint);
+            this.NewSet = new RelayCommand(NewSetEvent);
+            this.NewGame = new RelayCommand(NewGameEvent);
+            this.ExportGame = new RelayCommand(ExportGameEvent);
         }
 
-        public List<Player> Players {get; set;}
-        public List<Player> Servers { get; set; }
-        public List<ServeGrade> ServeGrades{ get; set; }
-        public List<PlayerFault> PlayerFaults{ get; set; }
-        public List<Reason> WinReasons{ get; set; }
-        public List<Reason> LooseReasons{ get; set; }
+        public RelayCommand NextPoint { get; private set; }
+        //public DelegateCommand NextPoint { get; set; }
+        public RelayCommand PrevPoint { get; set; }
+        public RelayCommand NewSet { get; set; }
+        public RelayCommand NewGame { get; set; }
+        public RelayCommand ExportGame { get; set; }
+
+        public GameConfiguration Config { get; set; }
+
+        private bool CanMoveNextPoint()
+        {
+            //return true;
+            if (CurrentPoint.Won.HasValue && CurrentPoint.Server != null)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        private bool CanMovePrevPoint()
+        {
+            //return true;
+            if (this.CurrentSet.CanMovePrev())
+            {
+                return true;
+            }
+            return false;
+        }
+
+        private Game _game;
 
         private Set _currentSet;
         private Point _currentPoint;
-        private Player _opponent;
-        //private string 
 
-        private ItemObservableCollection<Set> _sets;
-
-        public ItemObservableCollection<Set> Sets
+        public Game Game
         {
-            get { return _sets;}
-            set { this.Set(ref _sets, value, "Sets"); }
+            get { return _game; }
+            set { Set(ref _game, value); }
         }
-
-        public ICommand NextPoint { get; set; }
-        public ICommand PrevPoint { get; set; }
-        public ICommand NewSet { get; set; }
-        public ICommand NewGame { get; set; }
-        public ICommand ExportGame { get; set; }
 
         public void ExportGameEvent()
         { 
             string csv = "";
-            for (int i = 0; i < this.Sets.Count; i++)
+            for (int i = 0; i < this.Game.Sets.Count; i++)
             {
-                csv += this.Sets[i].Export(i+1);
+                csv += this.Game.Sets[i].Export(i + 1);
             }
             csv += "" + Environment.NewLine;
             CopyTextToClipboard(csv);
@@ -78,7 +87,7 @@ namespace VolleyballStats
 
         public void NewGameEvent()
         {
-            this.Sets = new ItemObservableCollection<Set>();
+            //this.Game = new Game();
             InitGame();
         }
 
@@ -99,71 +108,31 @@ namespace VolleyballStats
             this.CurrentSet.CalcScore();
             this.StartNewSet();
         }
-        
-        
-        private void OnSetsChanged(object sender, ItemPropertyChangedEventArgs<Set> e)
-        {
-            this.Set(ref _sets, Sets, "Sets");
-        }
-
-        private void OnSetsChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
 
         public void InitGame()
         {
+            this.Game = new Game();
+            Game.Config.Init();
             StartNewSet();
             //this.CurrentPoint = StartNewPoint(true, _opponent);
         }
 
         public Set StartNewSet()
         {
-            CurrentSet = new Set() { Number = this.Sets.Count + 1 };
-            this.Sets.Add(CurrentSet);
-            this.CurrentPoint = CurrentSet.StartNewSet(_opponent);
+            CurrentSet = new Set(this.Game) { Number = this.Game.Sets.Count + 1 };
+            this.Game.Sets.Add(CurrentSet);
+            this.CurrentPoint = CurrentSet.StartNewSet(_game.Opponent);
             return CurrentSet;
         }
 
-        //public Point StartNewPoint(bool? serving, Player player)
-        //{
-        //    return this.CurrentSet.Add(serving, player);
-        //}
-
         public void MoveNext()
         {
-            this.CurrentPoint = CurrentSet.MoveNext(this.CurrentPoint, _opponent);
+            this.CurrentPoint = CurrentSet.MoveNext(this.CurrentPoint, Game.Opponent);
         }
 
         public void MovePrev()
         {
             CurrentPoint = CurrentSet.MovePrev();
-        }
-
-        //public Point StartNewPoint()
-        //{
-        //    if (CurrentPoint != null )
-        //    {
-        //        if (CurrentPoint.Serving.HasValue)
-        //        {
-        //            if (CurrentPoint.Win != null)
-        //            {
-        //                return StartNewPoint(CurrentPoint.Serving, CurrentPoint.Server);
-        //            }
-        //            else
-        //            {
-        //                return StartNewPoint(!CurrentPoint.Serving.Value, _opponent);
-        //                //return StartNewPoint(!CurrentPoint.Serving.Value, Opponent);
-        //            }
-        //        }
-        //    }
-        //    return StartNewPoint(false, _opponent); 
-        //}
-
-        public Player Opponent 
-        {
-            get { return _opponent; }
-            set { Set(ref _opponent, value); } 
         }
 
         public Point CurrentPoint 
@@ -178,6 +147,8 @@ namespace VolleyballStats
         private void _currentPoint_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             Set(ref _currentPoint, _currentPoint);
+            NextPoint.RaiseCanExecuteChanged();
+            PrevPoint.RaiseCanExecuteChanged();
         }
 
         public Set CurrentSet
@@ -186,122 +157,4 @@ namespace VolleyballStats
             set { Set(ref _currentSet, value); }
         }
     }
-        public class Player
-        {
-            public int? Number { get; set; }
-            public string Name { get; set; }
-            public string DisplayName 
-            {
-                get 
-                {
-                    string value = Name;
-                    if (Number.HasValue && Number.Value>=0)
-                    {
-                        value = Number.Value.ToString() + " " + value;
-                    }
-                    return value;
-                }
-            }
-
-            public override bool Equals(object obj)
-            {
-                return (Name == ((Player)obj).Name );
-            }
-        }
-
-        public class ServeGrade
-        {
-            public int Grade { get; set; }
-            public string Name { get; set; }
-            public string DisplayName
-            {
-                get
-                {
-                    string value = Grade.ToString();
-                    if (!string.IsNullOrEmpty(Name))
-                    {
-                        value = value + "-" + Name;
-                    }
-                    return value;
-                }
-            }
-
-            public override bool Equals(object obj)
-            {
-                return (Grade == ((ServeGrade)obj).Grade);
-            }
-        }
-
-        public class Reason
-        {
-            public int? Value { get; set; }
-            public string Name { get; set; }
-            public bool? Win { get; set; }
-            public bool? ServeReturned { get; set; }
-
-            public string DisplayName
-            {
-                get
-                {
-                    string value = Name;
-                    if (Value.HasValue)
-                    {
-                        value = Value.Value.ToString() + " " + value;
-                    }
-                    return value;
-                }
-            }
-
-            public override bool Equals(object obj)
-            {
-                return (Name == ((Reason)obj).Name);
-            }
-        }
-
-        //public class LooseReason
-        //{ 
-        //    public int? Value { get; set; }
-        //    public string Name { get; set; }
-        //    public bool Us { get; set;}
-        //    public string DisplayName
-        //    {
-        //        get
-        //        {
-        //            string value = Name;
-        //            if (Value.HasValue)
-        //            {
-        //                value = Value.Value.ToString() + " " + value;
-        //            }
-        //            return value;
-        //        }
-        //    }
-
-        //    public override bool Equals(object obj)
-        //    {
-        //        return (Name == ((LooseReason)obj).Name);
-        //    }
-        //}
-
-        public class PlayerFault
-        {
-            public int? Value { get; set; }
-            public string Name { get; set; }
-            public string DisplayName
-            {
-                get
-                {
-                    string value = Name;
-                    if (Value.HasValue)
-                    {
-                        value = Value.Value.ToString() + " " + value;
-                    }
-                    return value;
-                }
-            }
-
-            public override bool Equals(object obj)
-            {
-                return (Name == ((PlayerFault)obj).Name);
-            }     
-        }
 }

@@ -14,6 +14,8 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
+using VolleyballStats.Model;
+
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
 namespace VolleyballStats
@@ -21,7 +23,7 @@ namespace VolleyballStats
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class Game : Page
+    public sealed partial class GameView : Page
     {
         //public class VolleyBallGame
         //{
@@ -44,70 +46,32 @@ namespace VolleyballStats
 
         public VolleyballGame ViewModel {get; set;}
 
-        public Game()
+        public GameView()
         {
             this.InitializeComponent();
             if (this.DataContext != null)
             {
-            this.ViewModel = (VolleyballGame)this.DataContext;
+                this.ViewModel = (VolleyballGame)this.DataContext;
 
-            //ViewModel = new VolleyballGame();
-            ViewModel.Players.Add(new Player(){Number=2, Name="Elena"});
-            ViewModel.Players.Add(new Player(){Number=13, Name="Sydney"});
-            ViewModel.Players.Add(new Player(){Number=18, Name="Hailey"});
-            ViewModel.Players.Add(new Player(){Number=22, Name="Keilani"});
-            ViewModel.Players.Add(new Player(){Number=25, Name="Torrey"});
-            ViewModel.Players.Add(new Player(){Number=35, Name="Miraya"});
-            ViewModel.Players.Add(new Player(){Number=40, Name="Sarah"});
-            ViewModel.Players.Add(new Player(){Number=89, Name="Maura"});
-            ViewModel.Players.Add(new Player(){Number=91, Name="Sadie"});
-            ViewModel.Players.Add(new Player(){Number=98, Name="Emma"});
-            ViewModel.Servers.AddRange(ViewModel.Players);
+                //ViewModel = new VolleyballGame();
 
-            ViewModel.ServeGrades.Add(new ServeGrade(){Grade=0});
-            ViewModel.ServeGrades.Add(new ServeGrade(){Grade=1});
-            ViewModel.ServeGrades.Add(new ServeGrade(){Grade=2});
-            ViewModel.ServeGrades.Add(new ServeGrade(){Grade=3});
-            ViewModel.ServeGrades.Add(new ServeGrade(){Grade=4});
-            ViewModel.ServeGrades.Add(new ServeGrade() { Grade = 5 });
-
-            ViewModel.WinReasons.Add(new Reason(){ Name="Ace", Win=true, ServeReturned=false});
-            ViewModel.WinReasons.Add(new Reason() { Name = "Spike", Win = true });
-            ViewModel.WinReasons.Add(new Reason() { Name = "Tip", Win = true });
-            ViewModel.WinReasons.Add(new Reason() { Name = "Dump", Win = true });
-            ViewModel.WinReasons.Add(new Reason() { Name = "Block", Win = true });
-            ViewModel.WinReasons.Add(new Reason() { Name = "Down Ball", Win = true });
-            ViewModel.LooseReasons.Add(new Reason() { Name = "Receive Error", Win = false, ServeReturned = false });
-            ViewModel.LooseReasons.Add(new Reason() { Name = "Attack Error", Win = false });
-            ViewModel.LooseReasons.Add(new Reason() { Name = "Set Error", Win = false });
-            ViewModel.LooseReasons.Add(new Reason() { Name = "Ball Handling", Win = false });
-            ViewModel.LooseReasons.Add(new Reason() { Name = "Free ball", Win = false });
-            ViewModel.LooseReasons.Add(new Reason() { Name = "Fault", Win = false });
-
-            //ViewModel.LooseReasons.Add(new Reason() { Name = "Ace", Win = true, ServeReturned = false });
-            //ViewModel.LooseReasons.Add(new Reason() { Name = "Spike", Win = true });
-            //ViewModel.LooseReasons.Add(new Reason() { Name = "Tip", Win = true });
-            //ViewModel.LooseReasons.Add(new Reason() { Name = "Dump", Win = true });
-            //ViewModel.LooseReasons.Add(new Reason() { Name = "Block", Win = true });
-            //ViewModel.LooseReasons.Add(new Reason() { Name = "Down Ball", Win = true });
-            //ViewModel.WinReasons.Add(new Reason() { Name = "Receive Error", Win = false, ServeReturned = false });
-            //ViewModel.WinReasons.Add(new Reason() { Name = "Attack Error", Win = false });
-            //ViewModel.WinReasons.Add(new Reason() { Name = "Set Error", Win = false });
-            //ViewModel.WinReasons.Add(new Reason() { Name = "Ball Handling", Win = false });
-            //ViewModel.WinReasons.Add(new Reason() { Name = "Free ball", Win = false });
-            //ViewModel.WinReasons.Add(new Reason() { Name = "Fault", Win = false });
+                //ViewModel.LooseReasons.Add(new Reason() { Name = "Ace", Win = true, ServeReturned = false });
+                //ViewModel.LooseReasons.Add(new Reason() { Name = "Spike", Win = true });
+                //ViewModel.LooseReasons.Add(new Reason() { Name = "Tip", Win = true });
+                //ViewModel.LooseReasons.Add(new Reason() { Name = "Dump", Win = true });
+                //ViewModel.LooseReasons.Add(new Reason() { Name = "Block", Win = true });
+                //ViewModel.LooseReasons.Add(new Reason() { Name = "Down Ball", Win = true });
+                //ViewModel.WinReasons.Add(new Reason() { Name = "Receive Error", Win = false, ServeReturned = false });
+                //ViewModel.WinReasons.Add(new Reason() { Name = "Attack Error", Win = false });
+                //ViewModel.WinReasons.Add(new Reason() { Name = "Set Error", Win = false });
+                //ViewModel.WinReasons.Add(new Reason() { Name = "Ball Handling", Win = false });
+                //ViewModel.WinReasons.Add(new Reason() { Name = "Free ball", Win = false });
+                //ViewModel.WinReasons.Add(new Reason() { Name = "Fault", Win = false });
             
-            ViewModel.PlayerFaults.Add(new PlayerFault(){ Name="Net"});
-            ViewModel.PlayerFaults.Add(new PlayerFault(){ Name="Ball"});
-            ViewModel.PlayerFaults.Add(new PlayerFault(){ Name="Under"});
-            ViewModel.PlayerFaults.Add(new PlayerFault(){ Name="Over Net"});
-            ViewModel.PlayerFaults.Add(new PlayerFault(){ Name="Foot"});
-            ViewModel.PlayerFaults.Add(new PlayerFault(){ Name="Rotation"});
-            ViewModel.PlayerFaults.Add(new PlayerFault(){ Name="Other"});
 
-            //ViewModel.Sets.Add(new Set() { Number= ViewModel.Sets.Count + 1 });
+                //ViewModel.Sets.Add(new Set() { Number= ViewModel.Sets.Count + 1 });
 
-            ViewModel.InitGame();
+                ViewModel.InitGame();
             }
 
             //this.DataContext = ViewModel;

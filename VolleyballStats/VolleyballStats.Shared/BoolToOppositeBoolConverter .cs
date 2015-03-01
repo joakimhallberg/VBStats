@@ -32,13 +32,18 @@ namespace VolleyballStats
 
         public object ConvertBack(object value, Type targetType, object parameter, string culture)
         {
-            if (targetType != typeof(bool))
-                throw new InvalidOperationException("The target must be a boolean");
-            else if (value is Nullable<bool>)
+        //    if (targetType != typeof(bool) && targetType != typeof(Nullable<bool>))
+        //        throw new InvalidOperationException("The target must be a boolean");
+        //    else 
+            if (value is Nullable<bool>)
             {
                 if (value == null)
                     return null;
                 return !(bool)value;                
+            }
+            else if (value is bool)
+            {
+                return !(bool)value;                    
             }
             else
             {

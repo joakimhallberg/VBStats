@@ -5,8 +5,9 @@ using System.Collections;
 using System.ComponentModel;
 using System.Text;
 using GalaSoft.MvvmLight;
+using VolleyballStats;
 
-namespace VolleyballStats
+namespace VolleyballStats.Model
 {
     public class Set : ObservableObject
     {
@@ -15,12 +16,18 @@ namespace VolleyballStats
         private int _lost;
         private string _temp;
         private int _currentIndex;
+        private Game game;
+        private TeamStatistics _them;
+        private TeamStatistics _us;
 
-        public Set()
+        public Set(Game currentGame)
         {
             this.Points = new ItemObservableCollection<Point>();
             Points.CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(PointsChanged); ;
             _currentIndex = 0;
+            game = currentGame;
+            Them = new TeamStatistics(false);
+            Us = new TeamStatistics(true);
         }
 
         void PointsChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -44,7 +51,7 @@ namespace VolleyballStats
                 {
                     return Add(false, opponent);
                 }
-                if (initPoint.Won)
+                if (initPoint.Won.HasValue && initPoint.Won.Value)
                 {
                     if (initPoint.Serving.HasValue && initPoint.Serving.Value)
                     {
@@ -62,7 +69,7 @@ namespace VolleyballStats
 
         public Point MovePrev()
         {
-            if (_currentIndex > 0)
+            if (CanMovePrev())
             {
                 _currentIndex -= 1;
                 return this.Points[_currentIndex];
@@ -70,13 +77,30 @@ namespace VolleyballStats
             return null;
         }
 
+        public bool CanMovePrev()
+        {
+            return (_currentIndex > 0);
+        }
+
         private Point Add(bool? serving, Player server)
         {
-            var CurrentPoint = new Point() { Serving = serving, Server = server, ServeGrade= new ServeGrade(){Grade=3}, Returned=true };
-            this.Points.Add(CurrentPoint);
             CalcScore();
             Score = "";
+            var CurrentPoint = new Point() { Serving = serving, Server = server, ServeGrade= new ServeGrade(){Grade=3}, Returned=true };
+            this.Points.Add(CurrentPoint);
             return CurrentPoint;            
+        }
+
+        public TeamStatistics Them 
+        {
+            get { return _them; }
+            set { Set(ref _them, value); }
+        }
+
+        public TeamStatistics Us
+        {
+            get { return _us; }
+            set { Set(ref _us, value); }
         }
 
         public int Number
@@ -98,17 +122,19 @@ namespace VolleyballStats
 
         public void CalcScore()
         {
-            PointsWon = 0;
-            PointsLost = 0;
+            this.Them = new TeamStatistics(false);
+            this.Us = new TeamStatistics(true);
+            foreach (var player in this.game.Config.Players)
+            {
+                player.Stats = (new PlayerStatistics(player));
+            }
             foreach (var point in this.Points)
             {
-                if (point.Won)
+                Them.AddPoint(point);
+                Us.AddPoint(point);
+                foreach (var player in this.game.Config.Players)
                 {
-                    PointsWon += 1;
-                }
-                else
-                {
-                    PointsLost += 1;
+                    player.Stats.AddPoint(point);
                 }
             }
         }

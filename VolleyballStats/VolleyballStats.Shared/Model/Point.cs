@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using GalaSoft.MvvmLight;
+using VolleyballStats.Model;
 
 namespace VolleyballStats
 {
@@ -12,7 +13,7 @@ namespace VolleyballStats
         //private int _server;
         private ServeGrade _grade;
         private bool _returned;
-        private bool _won;
+        private bool? _won;
         private Reason _reason;
         //private LooseReason _loose;
         private PlayerFault _fault;
@@ -65,7 +66,7 @@ namespace VolleyballStats
             set { Set(ref _returned, value); }
         }
 
-        public bool Won
+        public bool? Won
         {
             get { return this._won; }
             set { Set(ref _won, value); }
@@ -81,11 +82,16 @@ namespace VolleyballStats
                 {
                     if (value.ServeReturned.HasValue && !value.ServeReturned.Value && value.Win.HasValue && Serving.HasValue)
                     {
-                        Won =  Serving.Value;
+                        Won = this.Serving.HasValue && this.Serving.Value == value.Win.Value;
                     }
                     if (value.ServeReturned.HasValue)
                     {
                         Returned = value.ServeReturned.Value;
+                    }
+                    if (value.Grade != null)
+                    { 
+                        //this.
+                        this.ServeGrade= value.Grade;
                     }
                     //Won = true;
                     //Loose = null;
@@ -148,13 +154,17 @@ namespace VolleyballStats
             {
                 csv += ",";
             }
-            if (Won)
+            if (Won.HasValue && Won.Value)
             {
                 csv += "m,";                
             }
-            else
+            else if (Won.HasValue && Won.Value)
             {
                 csv += "t,";
+            }
+            else
+            {
+                csv += ",";
             }
             csv += set.ToString() +",";
             if (Reason != null)
