@@ -10,6 +10,7 @@ namespace VolleyballStats
     {
         private bool? _serving;
         private Player _server;
+        private Player _serveReturner;
         //private int _server;
         private ServeGrade _grade;
         private bool _returned;
@@ -34,6 +35,19 @@ namespace VolleyballStats
                     this.Serving = (value.Number > -1);
                 }
                 Set(ref _server, value); 
+            }
+        }
+
+        public Player ServeReturner
+        {
+            get { return this._serveReturner; }
+            set
+            {
+                //if (value != null)
+                //{
+                //    this.Serving = (value.Number > -1);
+                //}
+                Set(ref _serveReturner, value);
             }
         }
 
@@ -83,6 +97,10 @@ namespace VolleyballStats
                     if (value.ServeReturned.HasValue && !value.ServeReturned.Value && value.Win.HasValue && Serving.HasValue)
                     {
                         Won = this.Serving.HasValue && this.Serving.Value == value.Win.Value;
+                        if (value.ReceiveError.HasValue && value.ReceiveError.Value)
+                        {
+                            Won = !Won;
+                        }
                     }
                     if (value.ServeReturned.HasValue)
                     {

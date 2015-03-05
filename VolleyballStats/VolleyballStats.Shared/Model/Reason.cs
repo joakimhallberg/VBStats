@@ -12,6 +12,7 @@ namespace VolleyballStats.Model
         public string Name { get; set; }
         public bool? Win { get; set; }
         public bool? ServeReturned { get; set; }
+        public bool? ReceiveError { get; set; }
         //public bool ServeError {  get; set;}
         private int _count;
         public ServeGrade Grade { set; get; }
@@ -69,7 +70,7 @@ namespace VolleyballStats.Model
         {
             var list = new ObservableCollection<Reason>();
             list.Add(new Reason() { Name = "Serve Error", Win = false, ServeReturned = false, Grade = new ServeGrade() { Grade= 0} });
-            list.Add(new Reason() { Name = "Receive Error", Win = false, ServeReturned = false });
+            list.Add(new Reason() { Name = "Receive Error", Win = false, ServeReturned = false, ReceiveError=true });
             list.Add(new Reason() { Name = "Attack Error", Win = false });
             list.Add(new Reason() { Name = "Set Error", Win = false });
             list.Add(new Reason() { Name = "Ball Handling", Win = false });

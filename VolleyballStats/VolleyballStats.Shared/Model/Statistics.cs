@@ -23,6 +23,68 @@ namespace VolleyballStats.Model
             this.Reasons = new ItemObservableCollection<Reason>();
         }
 
+        protected virtual void AdditionalFieldsToCalc(Statistics stats)
+        { 
+            
+        }
+
+        protected virtual Statistics SetStatistics(Set set, Player player)
+        {
+            return set.Us;
+        }
+
+        public virtual void ResetStats()
+        {
+            this.ReasonLoose = 0;
+            this.ReasonWin = 0;
+            this.ServeCount = 0;
+            this.ServeGrade = 0;
+            this.ServeQuality = 0;
+            this.ServeReturned = 0;
+            this.ServeSuccess = 0;
+            this.ServeWon = 0;        
+            if (this.Reasons != null)
+            {
+                foreach (var reason in Reasons)
+                {
+                    reason.Count = 0;
+                }
+            }
+        }
+
+        public virtual void SumSets(ItemObservableCollection<Set> sets)
+        {
+            this.ResetStats();
+            foreach (var set in sets)
+            {
+                var stats = SetStatistics(set, null);
+                this.ReasonLoose += stats.ReasonLoose;
+                this.ReasonWin += stats.ReasonWin;
+                this.ServeCount += stats.ServeCount;
+                this.ServeGrade += stats.ServeGrade;
+                this.ServeQuality += stats.ServeQuality;
+                this.ServeReturned += stats.ServeReturned;
+                this.ServeSuccess += stats.ServeSuccess;
+                this.ServeWon += stats.ServeWon;
+
+                //this.Won += stats.Won;
+                if (stats.Reasons != null && this.Reasons != null)
+                {
+                    foreach (var reason in stats.Reasons)
+                    {
+                        foreach (var item in this.Reasons)
+                        {
+                            if (item.Equals(reason))
+                            {
+                                item.Count += reason.Count;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         public int ReasonWin
         {
             get { return _reasonWin; }

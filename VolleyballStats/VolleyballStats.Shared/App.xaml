@@ -11,7 +11,7 @@
     <Application.Resources>
         <ResourceDictionary>
 
-            <vm:ViewModelLocator x:Key="Locator" d:IsDataSource="true" />
+            <vm:ViewModelLocator x:Key="Locator" d:IsDataSource="true"  x:Name="Locator"/>
 
         </ResourceDictionary>
     </Application.Resources>

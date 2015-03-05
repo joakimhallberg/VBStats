@@ -4,6 +4,7 @@ using System.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Data;
 using VolleyballStats.Model;
+using VolleyballStats.ViewModel;
 
 
 namespace VolleyballStats
@@ -30,15 +31,15 @@ namespace VolleyballStats
     public class BooleanServerConverter : DependencyObject, IValueConverter
     {
 
-        public VolleyballGame CurrentViewModel
+        public VolleyballGameViewModel CurrentViewModel
         {
-            get { return (VolleyballGame)GetValue(CurrentViewModelProperty); }
+            get { return (VolleyballGameViewModel)GetValue(CurrentViewModelProperty); }
             set { SetValue(CurrentViewModelProperty, value); }
         }
 
         public static readonly DependencyProperty CurrentViewModelProperty =
             DependencyProperty.Register("CurrentViewModel",
-                                        typeof(VolleyballGame),
+                                        typeof(VolleyballGameViewModel),
                                         typeof(BooleanServerConverter),
                                         new PropertyMetadata(null));
 

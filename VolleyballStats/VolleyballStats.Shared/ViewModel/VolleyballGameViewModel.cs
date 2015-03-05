@@ -7,29 +7,67 @@ using System.Windows.Input;
 using Windows.ApplicationModel.DataTransfer;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.Views;
+using GalaSoft.MvvmLight.Ioc;
+using GalaSoft.MvvmLight.Messaging;
 
 using VolleyballStats.Model;
 
-namespace VolleyballStats
+namespace VolleyballStats.ViewModel
 {
-    public class VolleyballGame : ViewModelBase //ObservableObject
+    public class VolleyballGameViewModel : ViewModelBase //ObservableObject
     {
-        public VolleyballGame()
+        private INavigationService _navigationService;
+
+        public VolleyballGameViewModel()//INavigationService navigation)
         {
+            //this._navigationService = navigation;
             this.Config = new GameConfiguration();
             this.NextPoint = new RelayCommand(NextPointChangeEvent, CanMoveNextPoint);
 
             this.PrevPoint = new RelayCommand(PrevPointChangeEvent, CanMovePrevPoint);
             this.NewSet = new RelayCommand(NewSetEvent);
             this.NewGame = new RelayCommand(NewGameEvent);
+            this.NewGame2 = new RelayCommand(NewGameEvent2);
             this.ExportGame = new RelayCommand(ExportGameEvent);
+            //this.Game = new Model.Game(null);
+            this.Config = new GameConfiguration();
+            this.Config.Init();
+            RegisterMessenger();
+
+
+            InitGame();
         }
+
+
+        private void RegisterMessenger()
+        {
+            //Send out a message to see if another VM has params we need
+            Messenger.Default.Send<LinksInitMessage>(new LinksInitMessage(game =>
+            {
+                if (game != null)
+                {
+                    this.Game = game;
+                }
+            }));
+
+
+            //Register any message pipes
+            Messenger.Default.Register<LinksInitMessage>(this, msg =>
+            {
+                //this.ClearViewModel();
+                this.Game = msg.Payload;
+            });
+        }
+
+
 
         public RelayCommand NextPoint { get; private set; }
         //public DelegateCommand NextPoint { get; set; }
         public RelayCommand PrevPoint { get; set; }
         public RelayCommand NewSet { get; set; }
         public RelayCommand NewGame { get; set; }
+        public RelayCommand NewGame2 { get; set; }
         public RelayCommand ExportGame { get; set; }
 
         public GameConfiguration Config { get; set; }
@@ -91,6 +129,14 @@ namespace VolleyballStats
             InitGame();
         }
 
+        public void NewGameEvent2()
+        {
+            //this.Game = new Game();
+            //InitGame();
+            //this.e>
+            SimpleIoc.Default.GetInstance<INavigationService>().Navigate(typeof(GameSetup));
+        }
+
         public void NextPointChangeEvent()
         {
             MoveNext();
@@ -111,9 +157,15 @@ namespace VolleyballStats
 
         public void InitGame()
         {
-            this.Game = new Game();
+            if (this.Game == null)
+            {
+                this.Game = new Game();
+            }
             Game.Config.Init();
-            StartNewSet();
+            if (Game.Sets == null || Game.Sets.Count == 0)
+            {
+                StartNewSet();
+            }
             //this.CurrentPoint = StartNewPoint(true, _opponent);
         }
 
@@ -128,6 +180,7 @@ namespace VolleyballStats
         public void MoveNext()
         {
             this.CurrentPoint = CurrentSet.MoveNext(this.CurrentPoint, Game.Opponent);
+            Game.RecalcStats();
         }
 
         public void MovePrev()

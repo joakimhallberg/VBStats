@@ -23,11 +23,18 @@ namespace VolleyballStats.Model
         public Set(Game currentGame)
         {
             this.Points = new ItemObservableCollection<Point>();
-            Points.CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(PointsChanged); ;
+            Points.CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(PointsChanged); 
             _currentIndex = 0;
             game = currentGame;
-            Them = new TeamStatistics(false);
-            Us = new TeamStatistics(true);
+            Them = new TeamStatistics(false, currentGame.Config.CloneReasons());
+            Us = new TeamStatistics(true, currentGame.Config.CloneReasons());
+            foreach (var player in this.game.Config.Players)
+            {
+                if (player.Stats == null)
+                {
+                    player.Stats = new PlayerStatistics(player, game.Config.CloneReasons());
+                }
+            }
         }
 
         void PointsChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -122,11 +129,18 @@ namespace VolleyballStats.Model
 
         public void CalcScore()
         {
-            this.Them = new TeamStatistics(false);
-            this.Us = new TeamStatistics(true);
+            this.Them.ResetStats();
+            this.Us.ResetStats();
             foreach (var player in this.game.Config.Players)
             {
-                player.Stats = (new PlayerStatistics(player));
+                if (player.Stats == null)
+                {
+                    player.Stats = new PlayerStatistics(player, game.Config.CloneReasons());
+                }
+                else
+                {
+                    player.Stats.ResetStats();
+                }
             }
             foreach (var point in this.Points)
             {
@@ -137,8 +151,11 @@ namespace VolleyballStats.Model
                     player.Stats.AddPoint(point);
                 }
             }
+            this.RaisePropertyChanged("Them");
+            this.RaisePropertyChanged("Us");
+            this.RaisePropertyChanged("PointWon");
         }
-
+        
         public string Score
         {
             get { return PointsWon + " - " + PointsLost;}

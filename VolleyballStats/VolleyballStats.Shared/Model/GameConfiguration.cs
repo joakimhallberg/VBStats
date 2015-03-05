@@ -23,15 +23,15 @@ namespace VolleyballStats.Model
             this.Players = new ObservableCollection<Player>();
             this.Servers = new ObservableCollection<Player>();
             this.Opponent = new Player() { Name = "Them", Number = -1 };
-            this.Servers.Add(this.Opponent);
             this.ServeGrades = new ObservableCollection<ServeGrade>();
             this.PlayerFaults = new ObservableCollection<PlayerFault>();
             this.WinReasons = new ObservableCollection<Reason>();
-            this.LooseReasons = new ObservableCollection<Reason>();        
+            this.LooseReasons = new ObservableCollection<Reason>();
         }
 
         public void Init()
         {
+            this.Players.Clear();
             this.Players.Add(new Player() { Number = 2, Name = "Elena" });
             this.Players.Add(new Player() { Number = 13, Name = "Sydney" });
             this.Players.Add(new Player() { Number = 18, Name = "Hailey" });
@@ -42,12 +42,15 @@ namespace VolleyballStats.Model
             this.Players.Add(new Player() { Number = 89, Name = "Maura" });
             this.Players.Add(new Player() { Number = 91, Name = "Sadie" });
             this.Players.Add(new Player() { Number = 98, Name = "Emma" });
+            this.Servers.Clear();
+            this.Servers.Add(this.Opponent);
             foreach (var player in this.Players)
             {
                 this.Servers.Add(player);
             }
 
             var missedServ = new ServeGrade() { Grade = 0 };
+            this.ServeGrades.Clear();
             this.ServeGrades.Add(missedServ);
             this.ServeGrades.Add(new ServeGrade() { Grade = 1 });
             this.ServeGrades.Add(new ServeGrade() { Grade = 2 });
@@ -57,7 +60,8 @@ namespace VolleyballStats.Model
 
             this.WinReasons = Reason.DefaultWinReasons();
             this.LooseReasons = Reason.DefaultLooseReasons();
-            
+
+            this.PlayerFaults.Clear();
             this.PlayerFaults.Add(new PlayerFault() { Name = "Net" });
             this.PlayerFaults.Add(new PlayerFault() { Name = "Ball" });
             this.PlayerFaults.Add(new PlayerFault() { Name = "Under" });
@@ -65,6 +69,20 @@ namespace VolleyballStats.Model
             this.PlayerFaults.Add(new PlayerFault() { Name = "Foot" });
             this.PlayerFaults.Add(new PlayerFault() { Name = "Rotation" });
             this.PlayerFaults.Add(new PlayerFault() { Name = "Other" });
+        }
+        
+        public ItemObservableCollection<Reason> CloneReasons()
+        {
+            ItemObservableCollection<Reason> reasons = new ItemObservableCollection<Reason>();
+            foreach (var item in this.WinReasons)
+            {
+                reasons.Add(new Reason() { Name = item.Name, Count = 0, Grade = item.Grade, ServeReturned = item.ServeReturned, Value = item.Value, Win = item.Win });
+            }
+            foreach (var item in this.LooseReasons)
+            {
+                reasons.Add(new Reason() { Name = item.Name, Count = 0, Grade = item.Grade, ServeReturned = item.ServeReturned, Value = item.Value, Win = item.Win });
+            }
+            return reasons;
         }
     }
 }

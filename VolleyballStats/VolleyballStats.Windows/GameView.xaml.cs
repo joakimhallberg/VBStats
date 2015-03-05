@@ -15,6 +15,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
 using VolleyballStats.Model;
+using VolleyballStats.ViewModel;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -44,14 +45,14 @@ namespace VolleyballStats
         //    public List<LooseReason> LooseReasons{ get; set; }
         //}
 
-        public VolleyballGame ViewModel {get; set;}
+        public VolleyballGameViewModel ViewModel {get; set;}
 
         public GameView()
         {
             this.InitializeComponent();
             if (this.DataContext != null)
             {
-                this.ViewModel = (VolleyballGame)this.DataContext;
+                this.ViewModel = (VolleyballGameViewModel)this.DataContext;
 
                 //ViewModel = new VolleyballGame();
 

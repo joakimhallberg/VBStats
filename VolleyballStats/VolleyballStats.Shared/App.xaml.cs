@@ -16,6 +16,8 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
 
+using GalaSoft.MvvmLight.Ioc;
+
 // The Blank Application template is documented at http://go.microsoft.com/fwlink/?LinkId=234227
 
 namespace VolleyballStats
@@ -37,7 +39,10 @@ namespace VolleyballStats
         {
             this.InitializeComponent();
             this.Suspending += this.OnSuspending;
+            this.AppName = "Volleyball Stats";
         }
+
+        public string AppName { get; set; }
 
         /// <summary>
         /// Invoked when the application is launched normally by the end user.  Other entry points
@@ -61,7 +66,10 @@ namespace VolleyballStats
             if (rootFrame == null)
             {
                 // Create a Frame to act as the navigation context and navigate to the first page
-                rootFrame = new Frame();
+                rootFrame = new Frame(); 
+                
+                //JH
+                //SimpleIoc.Default.Register<INavigationService>(() =>{ return new NavigationService(rootFrame); });
 
                 // TODO: change this value to a cache size that is appropriate for your application
                 rootFrame.CacheSize = 1;
@@ -91,11 +99,11 @@ namespace VolleyballStats
                 rootFrame.ContentTransitions = null;
                 rootFrame.Navigated += this.RootFrame_FirstNavigated;
 #endif
-
+                SimpleIoc.Default.Register<INavigationService>(() => { return new NavigationService(rootFrame); });
                 // When the navigation stack isn't restored navigate to the first page,
                 // configuring the new page by passing required information as a navigation
                 // parameter
-                if (!rootFrame.Navigate(typeof(GameView), e.Arguments))
+                if (!rootFrame.Navigate(typeof(LandingPage), e.Arguments))
                 {
                     throw new Exception("Failed to create initial page");
                 }
