@@ -4,7 +4,7 @@ using System.Text;
 
 namespace VolleyballStats.Model
 {
-    public class ServeGrade 
+    public class ServeGrade
     {
         public int Grade { get; set; }
         public string Name { get; set; }

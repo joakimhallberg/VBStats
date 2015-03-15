@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Windows.ApplicationModel.DataTransfer;
 using GalaSoft.MvvmLight;
@@ -30,15 +31,24 @@ namespace VolleyballStats.ViewModel
             this.NewGame = new RelayCommand(NewGameEvent);
             this.NewGame2 = new RelayCommand(NewGameEvent2);
             this.ExportGame = new RelayCommand(ExportGameEvent);
+            this.ExportGameToFile = new ActionCommand(async () => await ExportGameEventToFile());
+            this.SaveGame = new ActionCommand(async () =>  await SaveGameEvent() );
             //this.Game = new Model.Game(null);
             this.Config = new GameConfiguration();
             this.Config.Init();
             RegisterMessenger();
-
-
             InitGame();
         }
 
+        public RelayCommand NextPoint { get; private set; }
+        //public DelegateCommand NextPoint { get; set; }
+        public RelayCommand PrevPoint { get; set; }
+        public RelayCommand NewSet { get; set; }
+        public RelayCommand NewGame { get; set; }
+        public RelayCommand NewGame2 { get; set; }
+        public RelayCommand ExportGame { get; set; }
+        public ActionCommand ExportGameToFile { get; set; }
+        public ActionCommand SaveGame { get; set; }
 
         private void RegisterMessenger()
         {
@@ -59,16 +69,6 @@ namespace VolleyballStats.ViewModel
                 this.Game = msg.Payload;
             });
         }
-
-
-
-        public RelayCommand NextPoint { get; private set; }
-        //public DelegateCommand NextPoint { get; set; }
-        public RelayCommand PrevPoint { get; set; }
-        public RelayCommand NewSet { get; set; }
-        public RelayCommand NewGame { get; set; }
-        public RelayCommand NewGame2 { get; set; }
-        public RelayCommand ExportGame { get; set; }
 
         public GameConfiguration Config { get; set; }
 
@@ -103,6 +103,36 @@ namespace VolleyballStats.ViewModel
             set { Set(ref _game, value); }
         }
 
+        public async Task ExportGameEventToFile()
+        {
+            string csv = "";
+            for (int i = 0; i < this.Game.Sets.Count; i++)
+            {
+                csv += this.Game.Sets[i].Export(i + 1);
+            }
+            csv += "" + Environment.NewLine;
+
+            string filename = string.Empty;
+            if (!string.IsNullOrEmpty(this.Game.OpposingTeam))
+            {
+                filename += "-" + Game.OpposingTeam;
+            }
+            if (!string.IsNullOrEmpty(this.Game.Tournament))
+            {
+                filename += "-" + Game.Tournament;
+            }
+            if (!string.IsNullOrEmpty(this.Game.Name))
+            {
+                filename += "-" + Game.Name;
+            }
+            if (Game.Date.HasValue)
+            {
+                filename += "-" + Game.Date.Value.ToString("yyyy-MM-dd");
+            }
+
+            await LocalFileStorage.Save(filename, csv);
+        }
+
         public void ExportGameEvent()
         { 
             string csv = "";
@@ -122,11 +152,47 @@ namespace VolleyballStats.ViewModel
             Clipboard.SetContent(dataPackage);
         }
 
+        public async Task SaveGameEvent()
+        {
+            var fileStorage = new FileStorage();
+            var file = await fileStorage.CreateFile(this.FileName());
+            var json = await JSon.Serialize(this.Game);
+            fileStorage.Write(file, json);
+        }
+
+        //public async Task SaveGame()
+        //{
+        //    var fileStorage = new FileStorage();
+        //    var file = await fileStorage.CreateFile(this.FileName());
+        //    var json = await JSon.Serialize(this.Game);
+        //    fileStorage.Write(file, json);
+        //}
+
+        private string FileName()
+        { 
+            string name = this.Game.OpposingTeam + "-";
+            if (!string.IsNullOrEmpty(this.Game.Tournament))
+                name += this.Game.Tournament + "-";
+            if (!string.IsNullOrEmpty(this.Game.Name))
+                name += this.Game.Name;
+            if (this.Game.Date.HasValue)
+                name +=   "-" + this.Game.Date.Value.ToString("YYYY-MM-DD");
+            return name;
+        }
+
+        protected void ResetGame()
+        {
+            //this.CurrentPoint = null;
+            //this.CurrentSet = null;
+            this.Game.Clear();
+            InitGame();
+        }
 
         public void NewGameEvent()
         {
             //this.Game = new Game();
-            InitGame();
+            ResetGame();
+            SimpleIoc.Default.GetInstance<INavigationService>().Navigate(typeof(GameSetup));
         }
 
         public void NewGameEvent2()
@@ -134,7 +200,9 @@ namespace VolleyballStats.ViewModel
             //this.Game = new Game();
             //InitGame();
             //this.e>
-            SimpleIoc.Default.GetInstance<INavigationService>().Navigate(typeof(GameSetup));
+
+            //this.Game = new Game();
+            SimpleIoc.Default.GetInstance<INavigationService>().Navigate(typeof(LandingPage));
         }
 
         public void NextPointChangeEvent()

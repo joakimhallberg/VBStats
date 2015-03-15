@@ -24,7 +24,10 @@ namespace VolleyballStats.Model
 
         public override bool Equals(object obj)
         {
-            return (Name == ((Player)obj).Name);
+            if (obj is Player)
+                return (Name == ((Player)obj).Name);
+            else
+                return false;
         }
 
         private PlayerStatistics _stats;

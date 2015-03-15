@@ -12,9 +12,11 @@
     <ApplicationDefinition Include="$(MSBuildThisFileDirectory)App.xaml">
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="$(MSBuildThisFileDirectory)ActionCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)AsyncDelegateCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AsyncRelayCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)BindableBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)BooleanServerConverter.cs" />
@@ -24,6 +26,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ItemObservableCollection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)JSon.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LinksInitMessage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LocalFileStorage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Game.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\GameConfiguration.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Organisation.cs" />

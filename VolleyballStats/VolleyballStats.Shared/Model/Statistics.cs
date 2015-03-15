@@ -5,6 +5,7 @@ using GalaSoft.MvvmLight;
 
 namespace VolleyballStats.Model
 {
+    [System.Runtime.Serialization.DataContract]
     public abstract class Statistics : ObservableObject
     {
         private int _serveCount;
@@ -154,23 +155,35 @@ namespace VolleyballStats.Model
             return false;
         }
 
+        public virtual void Clear()
+        {
+            ResetStats();
+        }
+
         public virtual bool AddPoint(Point point)
         {
+            if (!point.Won.HasValue)
+            {
+                return false;
+            }
             if (IncludeServe(point))
             {
                 ServeCount += 1;
-                ServeGrade += point.ServeGrade.Grade;
-                if (point.ServeGrade.Grade > 3)
+                if (point.ServeGrade != null)
                 {
-                    ServeQuality += 1;
-                }
-                if (point.ServeGrade.Grade == 0)
-                {
-                    //point.Reason = 
-                }
-                else
-                {
-                    ServeSuccess += 1;
+                    ServeGrade += point.ServeGrade.Grade;
+                    if (point.ServeGrade.Grade > 3)
+                    {
+                        ServeQuality += 1;
+                    }
+                    if (point.ServeGrade.Grade == 0)
+                    {
+                        //point.Reason = 
+                    }
+                    else
+                    {
+                        ServeSuccess += 1;
+                    }
                 }
                 if (point.Won.HasValue && point.Won.Value)
                 {

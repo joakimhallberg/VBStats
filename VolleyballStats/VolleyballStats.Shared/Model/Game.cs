@@ -22,6 +22,7 @@ namespace VolleyballStats.Model
             _them = new TeamStatistics(false, Config.CloneReasons(), this.Sets);
         }
 
+
         private string _opposingTeam;
         private string _tournament;
         private DateTime? _date;
@@ -34,6 +35,18 @@ namespace VolleyballStats.Model
         private ItemObservableCollection<Set> _sets;
         private Player _opponent;
         public GameConfiguration Config { get; set; }
+
+        public void Clear()
+        {
+            _us.Clear();
+            _them.Clear();
+            foreach (var player in _playerStats)
+            {
+                player.Stats.Clear();
+            }
+            Date = DateTime.Now.Date;
+            this.Sets.Clear();
+        }
 
         private void PointsChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {

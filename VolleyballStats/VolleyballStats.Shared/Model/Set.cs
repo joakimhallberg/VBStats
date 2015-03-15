@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Text;
 using GalaSoft.MvvmLight;
 using VolleyballStats;
+using Newtonsoft.Json;
 
 namespace VolleyballStats.Model
 {
@@ -16,6 +17,8 @@ namespace VolleyballStats.Model
         private int _lost;
         private string _temp;
         private int _currentIndex;
+        //[System.Runtime.Serialization.DataMember]
+        [JsonIgnore] 
         private Game game;
         private TeamStatistics _them;
         private TeamStatistics _us;
@@ -93,7 +96,7 @@ namespace VolleyballStats.Model
         {
             CalcScore();
             Score = "";
-            var CurrentPoint = new Point() { Serving = serving, Server = server, ServeGrade= new ServeGrade(){Grade=3}, Returned=true };
+            var CurrentPoint = new Point() { Serving = serving, Server = server, ServeGrade= new ServeGrade(){Grade=3}}; // Returned = true
             this.Points.Add(CurrentPoint);
             return CurrentPoint;            
         }

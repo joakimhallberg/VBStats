@@ -170,13 +170,13 @@ namespace VolleyballStats
             }
             else
             {
-                csv += ",";
+                csv += "0,";
             }
             if (Won.HasValue && Won.Value)
             {
                 csv += "m,";                
             }
-            else if (Won.HasValue && Won.Value)
+            else if (Won.HasValue && !Won.Value)
             {
                 csv += "t,";
             }
@@ -187,7 +187,15 @@ namespace VolleyballStats
             csv += set.ToString() +",";
             if (Reason != null)
             {
-                csv += Reason.Name + "," + Reason.Win.ToString() + ",";                
+                csv += Reason.Name + ",";
+                if (Reason.Win.HasValue && Reason.Win.Value)
+                {
+                    csv += "1" + ",";
+                }
+                else
+                {
+                    csv += "0" + ",";
+                }
             }
             else
             {
@@ -211,7 +219,19 @@ namespace VolleyballStats
             }
             if (this._credit != null)
             {
-                csv += _credit.Number.ToString() ;
+                csv += _credit.Number.ToString() + ",";
+            }
+            else
+            {
+                csv += ",";
+            }
+            if (this._serveReturner != null)
+            {
+                csv += _serveReturner.Number.ToString() + ",";
+            }
+            else
+            {
+                csv += ",";
             }
             //else
             //{

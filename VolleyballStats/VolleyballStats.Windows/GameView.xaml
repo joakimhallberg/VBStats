@@ -46,16 +46,16 @@
             <!--<StackPanel Orientation="Horizontal" Margin="10,0,10,0" >-->
                 <TextBlock Text="{Binding Path=Game.OpposingTeam, Mode=TwoWay}" FontSize="20" VerticalAlignment="Center" />
                 <ListView ItemsSource="{Binding Game.Sets, Mode=TwoWay}" VerticalAlignment="Center" ScrollViewer.HorizontalScrollBarVisibility="Auto"
-    ScrollViewer.VerticalScrollBarVisibility="Disabled" ScrollViewer.HorizontalScrollMode="Enabled" 
+    ScrollViewer.VerticalScrollBarVisibility="Disabled" ScrollViewer.HorizontalScrollMode="Enabled"  
     ScrollViewer.VerticalScrollMode="Disabled" ScrollViewer.ZoomMode="Disabled" SelectionMode="None" FontSize="20" >
-                    <!--<ListView.ItemsPanel>
+                    <ListView.ItemsPanel>
                         <ItemsPanelTemplate>
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center"/>
                         </ItemsPanelTemplate>                        
-                    </ListView.ItemsPanel>-->
+                    </ListView.ItemsPanel>
                     <ListView.ItemTemplate>
                     <DataTemplate>
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center"  >
+                        <StackPanel Orientation="Horizontal" >
                             <TextBlock Text="{Binding Path=Us.Won, Mode=TwoWay}"  FontSize="20"  VerticalAlignment="Center" />
                             <TextBlock Text=" - "  FontSize="20" VerticalAlignment="Center" />
                             <TextBlock Text="{Binding Path=Them.Won, Mode=TwoWay}"  FontSize="20" VerticalAlignment="Center" />
@@ -323,9 +323,11 @@
                 <Button Content="New Set" Command="{Binding NewSet}"  Margin="0,20, 0,20"></Button>
 
                 <Button Content="New Game" Command="{Binding NewGame}"  Margin="0,20, 0,20"></Button>
-                <Button Content="New Game" Click="set_Click" Command="{Binding NewGame2}"  Margin="0,20, 0,20"></Button>
+                <Button Content="Navigate" Click="set_Click" Command="{Binding NewGame2}"  Margin="0,20, 0,20"></Button>
 
                 <Button Content="Export" Command="{Binding ExportGame}"  Margin="0,20, 0,20"></Button>
+                <Button Content="Export File" Command="{Binding ExportGameToFile}"  Margin="0,20, 0,20"></Button>
+                <Button Content="Save" Command="{Binding SaveGame}"  Margin="0,20, 0,20"></Button>
 
             </StackPanel>
 

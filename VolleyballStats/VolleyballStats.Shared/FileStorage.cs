@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using Windows.Storage;
 
 namespace VolleyballStats
@@ -10,23 +11,22 @@ namespace VolleyballStats
         StorageFolder folder = ApplicationData.Current.LocalFolder;
         CreationCollisionOption option = CreationCollisionOption.ReplaceExisting;
 
-        public StorageFile CreateFile(string name)
+        public async Task<StorageFile> CreateFile(string name)
         {
-            var file = await folder.CreateFileAsync(name, option);
-            return file;
+            return await folder.CreateFileAsync(name, option);
         }
 
-        public void Write(StorageFile file, string content)
+        public async void Write(StorageFile file, string content)
         {
-            await FileIO.Write(file, content);
+            await FileIO.WriteTextAsync(file, content);
         }
 
-        public StorageFile Get(string name)
+        public async Task<StorageFile> Get(string name)
         {
             return await folder.GetFileAsync(name);
         }
 
-        public string GetContent(StorageFile file)
+        public async Task<string> GetContent(StorageFile file)
         {
             return await FileIO.ReadTextAsync(file);
         }
