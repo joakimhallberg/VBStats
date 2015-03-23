@@ -4,7 +4,9 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:VolleyballStats"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"  
+    xmlns:localControls="using:VolleyballStats.Controls"  
+    
     mc:Ignorable="d"
     Name="Root"
     >
@@ -16,6 +18,26 @@
         <local:BoolToOppositeBoolConverter x:Key="oppositeConverter" />
         <local:BooleanServerConverter x:Key="serverConverter" CurrentViewModel="{Binding DataContext}" />
         <local:BooleanIntServerConverter x:Key="serverIntConverter" />
+
+        <!--popup linup-->
+        <DataTemplate x:Key="item1Template">
+            <Border Background="Gray" Margin="5">
+                <Grid Width="200" Height="40">
+                    <TextBlock Text="{Binding}" 
+                            HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Grid>
+            </Border>
+        </DataTemplate>
+
+        <DataTemplate x:Key="item2Template">
+            <Border Background="Orange" Margin="5">
+                <Grid Width="200" Height="40">
+                    <TextBlock Text="{Binding}" 
+                            HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Grid>
+            </Border>
+        </DataTemplate>
+
     </Page.Resources>
 	<Page.DataContext>
 		<Binding Mode="OneWay" Path="VolleyballGame" Source="{StaticResource Locator}"/>
@@ -68,7 +90,7 @@
         <TextBlock Text="Server" Grid.Row="1" Grid.Column="0" FontSize="20" TextAlignment="Center"/>
         <StackPanel Grid.Column="0" Grid.Row="2"  HorizontalAlignment="Center" >
             <!--<TextBox Text="{Binding  CurrentPoint.Server, Mode=TwoWay}" />-->
-            <ListView ItemsSource="{Binding Game.Config.Servers}" Name="serverList" SelectedItem="{Binding Path=CurrentPoint.Server, Mode=TwoWay}"  >
+            <ListView ItemsSource="{Binding Path=Game.LineUp.OnCourtServers}" Name="serverList" SelectedItem="{Binding Path=CurrentPoint.Server, Mode=TwoWay}"  >
                 <ListView.ItemTemplate >
                     <DataTemplate  >
                         <Border BorderBrush="Red" BorderThickness="1">
@@ -120,7 +142,7 @@
         <TextBlock Text="Serve Returner" Grid.Row="1" Grid.Column="2" FontSize="20" TextAlignment="Center"/>
         <StackPanel Grid.Column="2" Grid.Row="2"  HorizontalAlignment="Center" >
             <!--<TextBox Text="{Binding  CurrentPoint.Server, Mode=TwoWay}" />-->
-            <ListView ItemsSource="{Binding Game.Config.Players}"  SelectedItem="{Binding Path=CurrentPoint.ServeReturner, Mode=TwoWay}"  >
+            <ListView ItemsSource="{Binding Game.LineUp.OnCourtPlayers}"  SelectedItem="{Binding Path=CurrentPoint.ServeReturner, Mode=TwoWay}"  >
                 <ListView.ItemTemplate >
                     <DataTemplate  >
                         <Border BorderBrush="Red" BorderThickness="1">
@@ -181,7 +203,7 @@
         </StackPanel>
         <TextBlock Text="Credit" Grid.Row="1" Grid.Column="6" FontSize="20" TextAlignment="Center"/>
         <StackPanel Grid.Column="6" Grid.Row="2"  >
-            <ListView ItemsSource="{Binding Game.Config.Players}"  SelectedItem="{Binding Path=CurrentPoint.Credit, Mode=TwoWay}" >
+            <ListView ItemsSource="{Binding Game.LineUp.OnCourtPlayers}"  SelectedItem="{Binding Path=CurrentPoint.Credit, Mode=TwoWay}" >
                 <ListView.ItemTemplate >
                     <DataTemplate  >
                         <Border BorderBrush="Red" BorderThickness="1">
@@ -225,6 +247,8 @@
             
             <Button Content="Next" Command="{Binding NextPoint}" Margin="0,20, 0,20" ></Button>
             <Button Content="Prev" Command="{Binding PrevPoint}" Margin="0,20, 0,20" ></Button>
+            
+            <Button Content="LineUp" Click="ShowLineUp"  ></Button>
 
         </StackPanel>
         <!--<TextBlock Text="Navigation" Grid.Row="1" Grid.Column="8" FontSize="20"/>
@@ -308,8 +332,56 @@
             <TextBlock Text="{Binding Game.Them.ReasonWin}" Grid.Row="1" Grid.Column="2" Foreground="Yellow"/>
             <TextBlock Text="{Binding Game.Us.ReasonLoose}" Grid.Row="2" Grid.Column="2" Foreground="Red"/>
             <TextBlock Text="{Binding Game.Them.ReasonLoose}" Grid.Row="2" Grid.Column="1" Foreground="Yellow"/>
-        </Grid>
+        </Grid><Popup x:Name="lineUp" IsOpen="False" IsLightDismissEnabled="True" FlowDirection="RightToLeft">
+        <Popup.ChildTransitions>
+            <TransitionCollection>
+                <PaneThemeTransition />
+            </TransitionCollection>
+        </Popup.ChildTransitions>
+        <Border BorderBrush="{StaticResource ApplicationForegroundThemeBrush}" BorderThickness="2" Background="{StaticResource ApplicationPageBackgroundThemeBrush}" 
+                x:Name="RootPopupBorder">
+            <Grid Width="500">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <StackPanel Orientation="Horizontal" Grid.Column="1" Grid.Row="0">
+                    <ListView
+                        x:Name="OnCourt"
+                        Grid.Column="0"
+                        Width="300" Height="700"
+                        ItemsSource="{Binding Game.OnCourtPlayers, Mode=TwoWay}"
+                        ItemTemplate="{StaticResource item1Template}"
+                        Margin="0,10,0,0"
+                        CanDragItems="True"
+                        CanReorderItems="True"
+                        AllowDrop="True"
+                        Drop="OnCourt_Drop"
+                        DragItemsStarting="onCourt_DragItemsStarting" />
+
+                    <ListView
+                        x:Name="Available"
+                        Grid.Column="1"
+                        Width="300" Height="700"
+                        ItemsSource="{Binding Game.Config.Servers, Mode=TwoWay}"
+                        ItemTemplate="{StaticResource item2Template}"
+                        Margin="0,10,0,0"
+                        CanDragItems="True"
+                        CanReorderItems="True"
+                        AllowDrop="True"
+                        DragItemsStarting="available_DragItemsStarting" />
+                        
+                </StackPanel>
+            </Grid>
+
+        </Border>
+    </Popup>
     </Grid>
+
+    
     <Page.BottomAppBar>
         <AppBar
             IsSticky="False"

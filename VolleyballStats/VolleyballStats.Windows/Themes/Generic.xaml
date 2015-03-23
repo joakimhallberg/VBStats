@@ -3,4 +3,27 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:VolleyballStats.Controls">
 
+    <SolidColorBrush x:Key="PopoverViewBackgroundThemeBrush">Black</SolidColorBrush>
+    <!-- Semi-transparant black brush to cover the background: -->
+    <SolidColorBrush x:Key="PopoverViewOverlayThemeBrush">#80000000</SolidColorBrush>
+
+    <Style TargetType="local:PopoverView">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="local:PopoverView">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <Border Grid.Row="0" Background="{StaticResource PopoverViewOverlayThemeBrush}" />
+                        <Border Grid.Row="1" Child="{TemplateBinding Content}" Background="{StaticResource PopoverViewBackgroundThemeBrush}" />
+                        <Border Grid.Row="2" Background="{StaticResource PopoverViewOverlayThemeBrush}" />
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
 </ResourceDictionary>

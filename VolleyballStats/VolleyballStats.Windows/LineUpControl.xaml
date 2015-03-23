@@ -1,0 +1,110 @@
+﻿<UserControl
+    x:Class="VolleyballStats.LineUpControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:VolleyballStats"
+    xmlns:custom="using:VolleyballStats.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="600"
+    d:DesignWidth="400">
+    <UserControl.DataContext>
+        <Binding Mode="OneWay" Path="VolleyballGame" Source="{StaticResource Locator}"/>
+    </UserControl.DataContext>
+    
+    <custom:PopoverView>
+        <Grid >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition ></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="On court" />
+            <TextBlock Grid.Row="0" Grid.Column="1" Text="Available" />
+            <ListView Grid.Row="1" Grid.Column="0" Width="200" x:Name="lineUp" ItemsSource="{Binding Game.LineUp.OnCourtPlayers}" Drop="lineUp_Drop" 
+                      CanDragItems="True" AllowDrop="True" CanReorderItems="True" BorderThickness="2" BorderBrush="AliceBlue">
+                <ListView.ItemTemplate >
+                    <DataTemplate  >
+                        <Border BorderBrush="Red" BorderThickness="1">
+                            <StackPanel Orientation="Vertical" VerticalAlignment="Center">
+                                <TextBlock Text="{Binding DisplayName}" Width="150"  TextAlignment="Center" />
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            <ListView Grid.Row="1" Grid.Column="1" ItemsSource="{Binding Game.LineUp.Available}" CanDragItems="True"
+                      DragItemsStarting="players_DragItemsStarting"  >
+                <ListView.ItemTemplate >
+                    <DataTemplate  >
+                        <Border BorderBrush="Red" BorderThickness="1">
+                            <StackPanel Orientation="Vertical" VerticalAlignment="Center">
+                                <TextBlock Text="{Binding DisplayName}" Width="150"  TextAlignment="Center" />
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            <Button Content="Close" Grid.Column="2" Grid.Row="1" Click="close_Click" />
+        </Grid>
+    </custom:PopoverView>
+    <!--<Grid x:Name="RootPanel">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition ></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <Border Background="#33000000" />
+        --><!-- Your Window Content Here --><!--
+        <Grid Grid.Column="1" Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition ></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="On court" />
+            <TextBlock Grid.Row="0" Grid.Column="1" Text="Available" />
+            <ListView Grid.Row="1" Grid.Column="0" ItemsSource="{Binding Game.OnCourtPlayers}" >
+                <ListView.ItemTemplate >
+                    <DataTemplate  >
+                        <Border BorderBrush="Red" BorderThickness="1">
+                            <StackPanel Orientation="Vertical" VerticalAlignment="Center">
+                                <TextBlock Text="{Binding DisplayName}" Width="150"  TextAlignment="Center" />
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            <ListView Grid.Row="1" Grid.Column="1" ItemsSource="{Binding Game.Config.Servers}" >
+                <ListView.ItemTemplate >
+                    <DataTemplate  >
+                        <Border BorderBrush="Red" BorderThickness="1">
+                            <StackPanel Orientation="Vertical" VerticalAlignment="Center">
+                                <TextBlock Text="{Binding DisplayName}" Width="150"  TextAlignment="Center" />
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            <Button Content="Close" Grid.Column="1" Grid.Row="2" Click="close_Click" />
+        </Grid>
+        <Border Grid.Row="2" Background="#33000000" />
+    </Grid>-->
+</UserControl>

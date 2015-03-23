@@ -16,10 +16,12 @@ namespace VolleyballStats.Model
             this.Config.Init();
             Date = DateTime.Now.Date;
             this.Sets = new ItemObservableCollection<Set>();
+            this.OnCourtPlayers = new ItemObservableCollection<Player>();
             Sets.CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(PointsChanged);
             _playerStats = new ObservableCollection<Player>();
             _us = new TeamStatistics(true, Config.CloneReasons(), this.Sets);
             _them = new TeamStatistics(false, Config.CloneReasons(), this.Sets);
+            this.LineUp = new LineUpHelper(this.Config);
         }
 
 
@@ -27,8 +29,10 @@ namespace VolleyballStats.Model
         private string _tournament;
         private DateTime? _date;
         private string _name;
+        private LineUpHelper _lineUp;
 
         private ObservableCollection<Player> _playerStats;
+        private ItemObservableCollection<Player> _onCourtPlayers;
         private TeamStatistics _us;
         private TeamStatistics _them;
 
@@ -48,6 +52,29 @@ namespace VolleyballStats.Model
             this.Sets.Clear();
         }
 
+        public Set StartNewSet()
+        {
+            var CurrentSet = new Set(this) { Number = this.Sets.Count + 1 };
+            this.Sets.Add(CurrentSet);
+            //this.SetupStartingPlayers();
+            //this.Servers.Clear();
+            //this.Servers.Add(Game.Config.Opponent);
+            //foreach (var player in Game.OnCourtPlayers)
+            //{
+            //    this.Servers.Add(player);
+            //}
+            return CurrentSet;
+        }
+
+        public void SetupStartingPlayers()
+        {
+            this.OnCourtPlayers.Clear();
+            foreach (var player in this.Config.Players)
+            {
+                this.OnCourtPlayers.Add(player);
+            }
+        }
+
         private void PointsChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             RecalcStats();
@@ -57,6 +84,12 @@ namespace VolleyballStats.Model
         {
             Us.SumSets(this.Sets);
             Them.SumSets(Sets);        
+        }
+
+        public LineUpHelper LineUp
+        {
+            get { return _lineUp; }
+            set { this.Set(ref _lineUp, value); }
         }
 
         public string Name
@@ -87,6 +120,12 @@ namespace VolleyballStats.Model
         {
             get { return _playerStats; }
             set { Set(ref _playerStats, value); }
+        }
+
+        public ItemObservableCollection<Player> OnCourtPlayers
+        {
+            get { return _onCourtPlayers; }
+            set { Set(ref _onCourtPlayers, value); }
         }
 
         public TeamStatistics Them

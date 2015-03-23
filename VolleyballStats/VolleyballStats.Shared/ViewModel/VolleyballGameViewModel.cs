@@ -36,10 +36,12 @@ namespace VolleyballStats.ViewModel
             //this.Game = new Model.Game(null);
             this.Config = new GameConfiguration();
             this.Config.Init();
+            this.Servers = new ItemObservableCollection<Player>();
             RegisterMessenger();
             InitGame();
         }
 
+        public ItemObservableCollection<Player> Servers { get; set; }
         public RelayCommand NextPoint { get; private set; }
         //public DelegateCommand NextPoint { get; set; }
         public RelayCommand PrevPoint { get; set; }
@@ -239,15 +241,37 @@ namespace VolleyballStats.ViewModel
 
         public Set StartNewSet()
         {
-            CurrentSet = new Set(this.Game) { Number = this.Game.Sets.Count + 1 };
-            this.Game.Sets.Add(CurrentSet);
+            CurrentSet = Game.StartNewSet();
             this.CurrentPoint = CurrentSet.StartNewSet(_game.Opponent);
+
+            //Game.SetupStartingPlayers();
+            //this.Servers.Clear();
+            //this.Servers.Add(Game.Config.Opponent);
+            //foreach (var player in Game.OnCourtPlayers)
+            //{
+            //    this.Servers.Add(player);
+            //}
             return CurrentSet;
         }
 
         public void MoveNext()
         {
+            var prevPoint = CurrentPoint;
             this.CurrentPoint = CurrentSet.MoveNext(this.CurrentPoint, Game.Opponent);
+            if (CurrentPoint.Serving != prevPoint.Serving && CurrentPoint.Serving.HasValue && CurrentPoint.Serving.Value && Game.LineUp.OnCourtPlayers != null && Game.LineUp.OnCourtPlayers.Count > 0)
+            {
+                var server = Game.LineUp.OnCourtPlayers[0];
+                this.Game.LineUp.Rotate();
+                //Game.OnCourtPlayers.Remove(server);
+                //Game.OnCourtPlayers.Add(server);
+                CurrentPoint.Server = Game.LineUp.OnCourtPlayers[0];
+                //this.Servers.Clear();
+                //this.Servers.Add(Game.Config.Opponent);
+                //foreach (var player in Game.OnCourtPlayers)
+                //{
+                //    this.Servers.Add(player);
+                //}
+            }
             Game.RecalcStats();
         }
 

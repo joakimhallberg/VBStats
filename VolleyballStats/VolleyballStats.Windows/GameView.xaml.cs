@@ -250,5 +250,70 @@ namespace VolleyballStats
                 win.SelectedItem = selectItem;
             }
         }
+
+        private void onCourt_DragItemsStarting(object sender, DragItemsStartingEventArgs e)
+        {
+
+        }
+
+        private void available_DragItemsStarting(object sender, DragItemsStartingEventArgs e)
+        {
+            foreach (var item in e.Items)
+            {
+                // If you want to drop only a subset of the dragged items,
+                // then make each key unique. 
+                e.Data.Properties.Add("VollayballStats.PLayer", item);
+            }
+
+        }
+
+        private void OnCourt_Drop(object sender, DragEventArgs e)
+        {
+            var dpView = e.Data.GetView();
+            foreach (var prop in dpView.Properties)
+            {
+                var player = prop.Value as Player;
+                ViewModel.Game.OnCourtPlayers.Add(player);
+            }
+
+        }
+
+        private Popup _eventPopup;
+ 
+        private void ShowLineUp(object sender, RoutedEventArgs e)
+        {
+
+            Popup popup = new Popup();
+            popup.Child = new LineUpControl(popup);
+            popup.IsOpen = true;
+
+            //LineUpControl dialog = new LineUpControl();
+            //dialog.CloseRequested += dialog_CloseRequested;
+            //_eventPopup = new Popup();
+            //_eventPopup.Child = dialog;
+            //_eventPopup.IsOpen = true;
+            
+            //if (!lineUp.IsOpen)
+            //{
+
+
+            //    RootPopupBorder.Width = 646;
+            //    lineUp.HorizontalOffset = Window.Current.Bounds.Width - 550;
+
+            //    lineUp.VerticalOffset = Window.Current.Bounds.Height - 100;
+
+            //    lineUp.IsOpen = true;
+            //}
+        }
+
+        void dialog_CloseRequested(object sender, EventArgs e)
+        {
+            _eventPopup.IsOpen = false;
+            if (e != null)
+            {
+                // successful. User pressed 'OK'
+            }
+        }
+
     }
 }
