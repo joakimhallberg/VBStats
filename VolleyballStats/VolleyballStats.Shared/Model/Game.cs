@@ -18,7 +18,7 @@ namespace VolleyballStats.Model
             this.Sets = new ItemObservableCollection<Set>();
             this.OnCourtPlayers = new ItemObservableCollection<Player>();
             Sets.CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(PointsChanged);
-            _playerStats = new ObservableCollection<Player>();
+            _playerStats = new ObservableCollection<PlayerStatistics>();
             _us = new TeamStatistics(true, Config.CloneReasons(), this.Sets);
             _them = new TeamStatistics(false, Config.CloneReasons(), this.Sets);
             this.LineUp = new LineUpHelper(this.Config);
@@ -31,7 +31,7 @@ namespace VolleyballStats.Model
         private string _name;
         private LineUpHelper _lineUp;
 
-        private ObservableCollection<Player> _playerStats;
+        private ObservableCollection<PlayerStatistics> _playerStats;
         private ItemObservableCollection<Player> _onCourtPlayers;
         private TeamStatistics _us;
         private TeamStatistics _them;
@@ -40,13 +40,28 @@ namespace VolleyballStats.Model
         private Player _opponent;
         public GameConfiguration Config { get; set; }
 
+        public List<BindableReason> PlayerReasonStatBindList
+        {
+            get;
+            set;
+        }
+
+        public void PrepPlayerStats()
+        {
+            this.PlayerReasonStatBindList = new List<BindableReason>();
+            foreach (var stat in PlayerStats)
+            {
+                this.PlayerReasonStatBindList.Add(new BindableReason(stat.PlayerName, stat.Reasons));
+            }
+        }
+
         public void Clear()
         {
             _us.Clear();
             _them.Clear();
             foreach (var player in _playerStats)
             {
-                player.Stats.Clear();
+                player.Clear();
             }
             Date = DateTime.Now.Date;
             this.Sets.Clear();
@@ -72,6 +87,7 @@ namespace VolleyballStats.Model
             foreach (var player in this.Config.Players)
             {
                 this.OnCourtPlayers.Add(player);
+                this.PlayerStats.Add(new PlayerStatistics(player.Clone(), Config.CloneReasons()));
             }
         }
 
@@ -80,10 +96,29 @@ namespace VolleyballStats.Model
             RecalcStats();
         }
 
+        private bool recalcing;
         public void RecalcStats()
         {
-            Us.SumSets(this.Sets);
-            Them.SumSets(Sets);        
+            if (!recalcing)
+            {
+                recalcing = true;
+                Us.SumSets(this.Sets);
+                Them.SumSets(Sets);
+                if (PlayerStats.Count == 0)
+                {
+                    foreach (var player in this.Config.Players)
+                    {
+                        //var p = player.Clone();
+                        //p.Stats = new PlayerStatistics(p, Config.CloneReasons());
+                        this.PlayerStats.Add(new PlayerStatistics(player.Clone(), Config.CloneReasons()));
+                    }
+                }
+                foreach (var player in PlayerStats)
+                {
+                    player.SumSets(Sets);
+                }
+                recalcing = false;
+            }
         }
 
         public LineUpHelper LineUp
@@ -116,7 +151,7 @@ namespace VolleyballStats.Model
             set { this.Set(ref _opposingTeam, value); }
         }
 
-        public ObservableCollection<Player> PlayerStats
+        public ObservableCollection<PlayerStatistics> PlayerStats
         {
             get { return _playerStats; }
             set { Set(ref _playerStats, value); }

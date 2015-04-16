@@ -86,6 +86,35 @@ namespace VolleyballStats.Model
             }
         }
 
+        protected virtual void Add(Statistics stats)
+        {
+            this.ReasonLoose += stats.ReasonLoose;
+            this.ReasonWin += stats.ReasonWin;
+            this.ServeCount += stats.ServeCount;
+            this.ServeGrade += stats.ServeGrade;
+            this.ServeQuality += stats.ServeQuality;
+            this.ServeReturned += stats.ServeReturned;
+            this.ServeSuccess += stats.ServeSuccess;
+            this.ServeWon += stats.ServeWon;
+
+            //this.Won += stats.Won;
+            if (stats.Reasons != null && this.Reasons != null)
+            {
+                foreach (var reason in stats.Reasons)
+                {
+                    foreach (var item in this.Reasons)
+                    {
+                        if (item.Equals(reason))
+                        {
+                            item.Count += reason.Count;
+                            break;
+                        }
+                    }
+                }
+            }
+            
+        }
+
         public int ReasonWin
         {
             get { return _reasonWin; }
@@ -114,6 +143,22 @@ namespace VolleyballStats.Model
         {
             get { return _serveSuccess; }
             set { Set(ref _serveSuccess, value); }
+        }
+
+        public decimal? ServePercentage
+        {
+            get {
+                if (ServeCount == 0)
+                {
+                    return null;
+                }
+                return ((decimal)ServeSuccess / (decimal)ServeCount) * 100;
+            }
+        }
+
+        public decimal ServeMissed
+        {
+            get { return (ServeCount - ServeSuccess); }
         }
 
         public int ServeWon

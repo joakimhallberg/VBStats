@@ -8,10 +8,20 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     d:DesignHeight="600"
-    d:DesignWidth="400">
+    d:DesignWidth="800">
     <UserControl.DataContext>
         <Binding Mode="OneWay" Path="VolleyballGame" Source="{StaticResource Locator}"/>
     </UserControl.DataContext>
+    <UserControl.Resources>
+        <Style x:Name="PositionDrop" TargetType="TextBlock">
+            <Setter Property="Width" Value="150"/>
+            <Setter Property="Height" Value="75"/>
+            <Setter Property="FontSize" Value="18" />
+        </Style>
+        <Style x:Name="HeaderText" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="20" />
+        </Style>
+    </UserControl.Resources>
     
     <custom:PopoverView>
         <Grid >
@@ -25,9 +35,21 @@
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-            <TextBlock Grid.Row="0" Grid.Column="0" Text="On court" />
-            <TextBlock Grid.Row="0" Grid.Column="1" Text="Available" />
-            <ListView Grid.Row="1" Grid.Column="0" Width="200" x:Name="lineUp" ItemsSource="{Binding Game.LineUp.OnCourtPlayers}" Drop="lineUp_Drop" 
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="On court" Style="{StaticResource HeaderText}" HorizontalAlignment="Center" />
+            <TextBlock Grid.Row="0" Grid.Column="1" Text="Available" Style="{StaticResource HeaderText}" HorizontalAlignment="Center"/>
+            <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" >
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock AllowDrop="True" Tag="4" Text="Front  Left" x:Name="player4" Drop="player_Drop" Style="{StaticResource PositionDrop}" HorizontalAlignment="Center"  ></TextBlock>
+                    <TextBlock AllowDrop="True" Tag="3" Text="Front  Mid" x:Name="player3" Drop="player_Drop" Style="{StaticResource PositionDrop}" HorizontalAlignment="Center"></TextBlock>
+                    <TextBlock AllowDrop="True" Tag="2" Text="Front  Right" x:Name="player2" Drop="player_Drop" Style="{StaticResource PositionDrop}" HorizontalAlignment="Center"></TextBlock>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock AllowDrop="True" Tag="5" Text="Back Left" x:Name="player5" Drop="player_Drop" Style="{StaticResource PositionDrop}" HorizontalAlignment="Center"></TextBlock>
+                    <TextBlock AllowDrop="True" Tag="6" Text="Back Mid" x:Name="player6" Drop="player_Drop" Style="{StaticResource PositionDrop}"  HorizontalAlignment="Center"></TextBlock>
+                    <TextBlock AllowDrop="True" Tag="1" Text="Back Right" x:Name="player1" Drop="player_Drop" Style="{StaticResource PositionDrop}" HorizontalAlignment="Center"></TextBlock>
+                </StackPanel>
+            </StackPanel>
+            <!--<ListView Grid.Row="1" Grid.Column="0" Width="200" x:Name="lineUp" ItemsSource="{Binding Game.LineUp.OnCourtPlayers}" Drop="lineUp_Drop" 
                       CanDragItems="True" AllowDrop="True" CanReorderItems="True" BorderThickness="2" BorderBrush="AliceBlue">
                 <ListView.ItemTemplate >
                     <DataTemplate  >
@@ -38,9 +60,9 @@
                         </Border>
                     </DataTemplate>
                 </ListView.ItemTemplate>
-            </ListView>
+            </ListView>-->
             <ListView Grid.Row="1" Grid.Column="1" ItemsSource="{Binding Game.LineUp.Available}" CanDragItems="True"
-                      DragItemsStarting="players_DragItemsStarting"  >
+                      DragItemsStarting="players_DragItemsStarting" HorizontalAlignment="Center" >
                 <ListView.ItemTemplate >
                     <DataTemplate  >
                         <Border BorderBrush="Red" BorderThickness="1">

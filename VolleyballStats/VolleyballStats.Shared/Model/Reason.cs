@@ -49,7 +49,9 @@ namespace VolleyballStats.Model
 
         public override bool Equals(object obj)
         {
-            return (Name == ((Reason)obj).Name);
+            if (obj is Reason)
+                return (Name == ((Reason)obj).Name);
+            return false;
         }
 
         public static ObservableCollection<Reason> DefaultWinReasons()

@@ -6,7 +6,6 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"  
     xmlns:localControls="using:VolleyballStats.Controls"  
-    
     mc:Ignorable="d"
     Name="Root"
     >
@@ -148,7 +147,6 @@
                         <Border BorderBrush="Red" BorderThickness="1">
                             <StackPanel Orientation="Vertical" >
                                 <TextBlock Text="{Binding DisplayName}" Width="150"  TextAlignment="Center" />
-                                <TextBlock Text="{Binding Path=Stats.ServePercemt}" />
                             </StackPanel>
                         </Border>
                     </DataTemplate>
@@ -249,6 +247,7 @@
             <Button Content="Prev" Command="{Binding PrevPoint}" Margin="0,20, 0,20" ></Button>
             
             <Button Content="LineUp" Click="ShowLineUp"  ></Button>
+            <Button Content="Chart" Click="ShowChart" ></Button>
 
         </StackPanel>
         <!--<TextBlock Text="Navigation" Grid.Row="1" Grid.Column="8" FontSize="20"/>
@@ -332,7 +331,9 @@
             <TextBlock Text="{Binding Game.Them.ReasonWin}" Grid.Row="1" Grid.Column="2" Foreground="Yellow"/>
             <TextBlock Text="{Binding Game.Us.ReasonLoose}" Grid.Row="2" Grid.Column="2" Foreground="Red"/>
             <TextBlock Text="{Binding Game.Them.ReasonLoose}" Grid.Row="2" Grid.Column="1" Foreground="Yellow"/>
-        </Grid><Popup x:Name="lineUp" IsOpen="False" IsLightDismissEnabled="True" FlowDirection="RightToLeft">
+            
+        </Grid>
+        <Popup x:Name="lineUp" IsOpen="False" IsLightDismissEnabled="True" FlowDirection="RightToLeft">
         <Popup.ChildTransitions>
             <TransitionCollection>
                 <PaneThemeTransition />

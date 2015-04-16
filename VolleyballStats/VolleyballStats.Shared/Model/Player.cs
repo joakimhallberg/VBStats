@@ -36,5 +36,13 @@ namespace VolleyballStats.Model
             get { return this._stats; }
             set { this.Set(ref _stats, value); }
         }
+
+        public Player Clone()
+        {
+            var item = new Player();
+            item.Name = this.Name;
+            item.Number = this.Number;
+            return item;
+        }
     }
 }

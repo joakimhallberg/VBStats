@@ -23,7 +23,9 @@ namespace VolleyballStats.Model
 
         public override bool Equals(object obj)
         {
-            return (Grade == ((ServeGrade)obj).Grade);
+            if (obj is ServeGrade)
+                return (Grade == ((ServeGrade)obj).Grade);
+            return false;
         }
     }
 }

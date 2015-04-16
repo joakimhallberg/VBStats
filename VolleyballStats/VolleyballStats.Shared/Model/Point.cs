@@ -19,6 +19,13 @@ namespace VolleyballStats
         //private LooseReason _loose;
         private PlayerFault _fault;
         private Player _credit;
+        private ItemObservableCollection<Player> _players;
+
+        public ItemObservableCollection<Player> Players
+        {
+            get { return this._players; }
+            set { Set(ref _players, value); }
+        }
 
         public bool? Serving
         {
@@ -110,6 +117,25 @@ namespace VolleyballStats
                     { 
                         //this.
                         this.ServeGrade= value.Grade;
+                    }
+
+                    if (value.ServeReturned.HasValue && value.Win.HasValue
+                        && !value.ServeReturned.Value && value.Win.Value
+                        && this.Won.HasValue && this.Won.Value
+                        && this.Serving.HasValue && this.Serving.Value
+                        && this.Server != null && this.Players.Contains(this.Server)
+                        && this.Credit == null)
+                    {
+                        this.Credit = this.Server;
+                    }
+                    if (value.ServeReturned.HasValue && !value.ServeReturned.Value
+                        && value.Win.HasValue && !value.Win.Value
+                        && this.Won.HasValue && !this.Won.Value
+                        && this.Serving.HasValue && this.Serving.Value
+                        && this.Server != null && this.Players.Contains(this.Server)
+                        && this.Credit == null)
+                    {
+                        this.Credit = this.Server;
                     }
                     //Won = true;
                     //Loose = null;
@@ -233,6 +259,15 @@ namespace VolleyballStats
             {
                 csv += ",";
             }
+
+            if (this.Players != null && this.Players.Count > 0)
+            {
+                foreach (var item in this.Players)
+                {
+                    csv += item.Number.ToString() + ",";                    
+                }
+            }
+
             //else
             //{
             //    csv += ",";

@@ -45,7 +45,7 @@ namespace VolleyballStats
         private void close_Click(object sender, RoutedEventArgs e)
         {
             this.popup.IsOpen = false;
-
+            ViewModel.LineUpChanged();
             //if (this.CloseRequested != null)
             //{
             //    // pass null arguments to indicate unsuccessful close
@@ -69,16 +69,41 @@ namespace VolleyballStats
             foreach (var prop in dpView.Properties)
             {
                 var player = prop.Value as VolleyballStats.Model.Player;
-                //lineUp.Items.Add(player);
                 var i = ViewModel.Game.LineUp.OnCourtPlayers.Count;
                 if (i == 6)
                 {
                     i = 5;
                 }
-                ViewModel.Game.LineUp.SubPlayer(player, i +1);
-                //ViewModel.Game.OnCourtPlayers.Add(player);
+                //ViewModel.Game.LineUp.SubPlayer(player, i +1);
             }
 
+        }
+
+        private void player_Drop(object sender, DragEventArgs e)
+        {
+            var dpView = e.Data.GetView();
+            var txt = sender as TextBlock;
+            if (txt != null)
+            {
+                foreach (var prop in dpView.Properties)
+                {
+
+                    var player = prop.Value as VolleyballStats.Model.Player;
+                    //lineUp.Items.Add(player);
+                    txt.DataContext = player;
+                    txt.Text = player.DisplayName;
+                    ViewModel.Game.LineUp.SubPlayer(player, int.Parse((string)txt.Tag));
+
+                    //var i = ViewModel.Game.LineUp.OnCourtPlayers.Count;
+                    //if (i == 6)
+                    //{
+                    //    i = 5;
+                    //}
+                    //ViewModel.Game.LineUp.SubPlayer(player, i + 1);
+                    //ViewModel.Game.OnCourtPlayers.Add(player);
+
+                }
+            }
         }
 
     }

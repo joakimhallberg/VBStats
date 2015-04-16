@@ -31,6 +31,7 @@ namespace VolleyballStats.ViewModel
             this.NewGame = new RelayCommand(NewGameEvent);
             this.NewGame2 = new RelayCommand(NewGameEvent2);
             this.ExportGame = new RelayCommand(ExportGameEvent);
+            this.ShowGame = new RelayCommand(ShowGameEvent);
             this.ExportGameToFile = new ActionCommand(async () => await ExportGameEventToFile());
             this.SaveGame = new ActionCommand(async () =>  await SaveGameEvent() );
             //this.Game = new Model.Game(null);
@@ -49,6 +50,7 @@ namespace VolleyballStats.ViewModel
         public RelayCommand NewGame { get; set; }
         public RelayCommand NewGame2 { get; set; }
         public RelayCommand ExportGame { get; set; }
+        public RelayCommand ShowGame { get; set; }
         public ActionCommand ExportGameToFile { get; set; }
         public ActionCommand SaveGame { get; set; }
 
@@ -197,6 +199,16 @@ namespace VolleyballStats.ViewModel
             SimpleIoc.Default.GetInstance<INavigationService>().Navigate(typeof(GameSetup));
         }
 
+        public void ShowStats()
+        {
+            SimpleIoc.Default.GetInstance<INavigationService>().Navigate(typeof(StatGridView));        
+        }
+
+        public void ShowGameEvent()
+        {
+            SimpleIoc.Default.GetInstance<INavigationService>().Navigate(typeof(GameView));
+        }
+
         public void NewGameEvent2()
         {
             //this.Game = new Game();
@@ -265,6 +277,7 @@ namespace VolleyballStats.ViewModel
                 //Game.OnCourtPlayers.Remove(server);
                 //Game.OnCourtPlayers.Add(server);
                 CurrentPoint.Server = Game.LineUp.OnCourtPlayers[0];
+                CurrentPoint.Players = Game.LineUp.CloneOnCourtPlayers();
                 //this.Servers.Clear();
                 //this.Servers.Add(Game.Config.Opponent);
                 //foreach (var player in Game.OnCourtPlayers)
@@ -300,6 +313,11 @@ namespace VolleyballStats.ViewModel
         {
             get { return _currentSet; }
             set { Set(ref _currentSet, value); }
+        }
+
+        public void LineUpChanged()
+        {
+            CurrentPoint.Players = Game.LineUp.CloneOnCourtPlayers();
         }
     }
 }

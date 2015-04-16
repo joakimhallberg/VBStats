@@ -282,28 +282,17 @@ namespace VolleyballStats
  
         private void ShowLineUp(object sender, RoutedEventArgs e)
         {
-
             Popup popup = new Popup();
             popup.Child = new LineUpControl(popup);
             popup.IsOpen = true;
+        }
 
-            //LineUpControl dialog = new LineUpControl();
-            //dialog.CloseRequested += dialog_CloseRequested;
-            //_eventPopup = new Popup();
-            //_eventPopup.Child = dialog;
-            //_eventPopup.IsOpen = true;
-            
-            //if (!lineUp.IsOpen)
-            //{
-
-
-            //    RootPopupBorder.Width = 646;
-            //    lineUp.HorizontalOffset = Window.Current.Bounds.Width - 550;
-
-            //    lineUp.VerticalOffset = Window.Current.Bounds.Height - 100;
-
-            //    lineUp.IsOpen = true;
-            //}
+        private void ShowChart(object sender, RoutedEventArgs e)
+        {
+            //Popup popup = new Popup();
+            //popup.Child = new ChartControl(popup);
+            //popup.IsOpen = true;
+            ViewModel.ShowStats();
         }
 
         void dialog_CloseRequested(object sender, EventArgs e)
@@ -313,7 +302,7 @@ namespace VolleyballStats
             {
                 // successful. User pressed 'OK'
             }
+            ViewModel.LineUpChanged();
         }
-
     }
 }

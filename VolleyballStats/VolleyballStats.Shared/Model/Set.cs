@@ -22,7 +22,8 @@ namespace VolleyballStats.Model
         private Game game;
         private TeamStatistics _them;
         private TeamStatistics _us;
-
+        private ObservableCollection<Player> _playerStats;
+        
         public Set(Game currentGame)
         {
             this.Points = new ItemObservableCollection<Point>();
@@ -38,6 +39,7 @@ namespace VolleyballStats.Model
                     player.Stats = new PlayerStatistics(player, game.Config.CloneReasons());
                 }
             }
+            _playerStats = new ObservableCollection<Player>();
         }
 
         void PointsChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -54,13 +56,17 @@ namespace VolleyballStats.Model
 
         public Point MoveNext(Point initPoint, Player opponent)
         {
+            if (_currentIndex >= 0 && this.Points.Count > _currentIndex)
+            {
+                this.Points[_currentIndex].Players = game.LineUp.CloneOnCourtPlayers();
+            }
             _currentIndex += 1;
             if (_currentIndex > this.Points.Count-1)
             {
                 if (initPoint == null)
                 {
                     return Add(false, opponent);
-                }
+                }               
                 if (initPoint.Won.HasValue && initPoint.Won.Value)
                 {
                     if (initPoint.Serving.HasValue && initPoint.Serving.Value)
@@ -98,7 +104,14 @@ namespace VolleyballStats.Model
             Score = "";
             var CurrentPoint = new Point() { Serving = serving, Server = server, ServeGrade= new ServeGrade(){Grade=3}}; // Returned = true
             this.Points.Add(CurrentPoint);
+            CurrentPoint.Players = game.LineUp.CloneOnCourtPlayers();
             return CurrentPoint;            
+        }
+
+        public ObservableCollection<Player> PlayerStats
+        {
+            get { return _playerStats; }
+            set { Set(ref _playerStats, value); }
         }
 
         public TeamStatistics Them 
@@ -130,33 +143,47 @@ namespace VolleyballStats.Model
             set { Set(ref _lost, value); }
         }
 
+        private bool _semaphore;
         public void CalcScore()
         {
-            this.Them.ResetStats();
-            this.Us.ResetStats();
-            foreach (var player in this.game.Config.Players)
+            if (!_semaphore)
             {
-                if (player.Stats == null)
+                _semaphore = true;
+                this.Them.ResetStats();
+                this.Us.ResetStats();
+                if (this.PlayerStats.Count == 0)
                 {
-                    player.Stats = new PlayerStatistics(player, game.Config.CloneReasons());
+                    foreach (var player in this.game.Config.Servers)
+                    {
+                        this.PlayerStats.Add(player.Clone());
+                    }
                 }
-                else
+                foreach (var player in this.PlayerStats)
                 {
-                    player.Stats.ResetStats();
+                    if (player.Stats == null)
+                    {
+                        player.Stats = new PlayerStatistics(player, game.Config.CloneReasons());
+                    }
+                    else
+                    {
+                        player.Stats.ResetStats();
+                    }
                 }
+                foreach (var point in this.Points)
+                {
+                    Them.AddPoint(point);
+                    Us.AddPoint(point);
+                    foreach (var player in this.PlayerStats)
+                    {
+                        player.Stats.AddPoint(point);
+                    }
+                }
+                _semaphore = false;
+                this.RaisePropertyChanged("Them");
+                this.RaisePropertyChanged("Us");
+                this.RaisePropertyChanged("PlayerStats");
+                this.RaisePropertyChanged("PointWon");
             }
-            foreach (var point in this.Points)
-            {
-                Them.AddPoint(point);
-                Us.AddPoint(point);
-                foreach (var player in this.game.Config.Players)
-                {
-                    player.Stats.AddPoint(point);
-                }
-            }
-            this.RaisePropertyChanged("Them");
-            this.RaisePropertyChanged("Us");
-            this.RaisePropertyChanged("PointWon");
         }
         
         public string Score

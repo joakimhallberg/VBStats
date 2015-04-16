@@ -116,8 +116,17 @@ namespace VolleyballStats.Model
                     this.OnCourtPlayers.Add(Players[i]);
                     this.OnCourtServers.Add(Players[i]);
                 }
+            }            
+        }
+
+        public ItemObservableCollection<Player> CloneOnCourtPlayers()
+        {
+            var list = new ItemObservableCollection<Player>();
+            foreach (var item in this._onCourtPlayers)
+            {
+                list.Add(item.Clone());
             }
-            
+            return list;
         }
     }
 }
